@@ -7,7 +7,7 @@
 
 
     <application
-        android:name="com.mvvm.sample.application.SampleApp"
+        android:name=".application.SampleApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -20,7 +20,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name="com.mvvm.sample.splash.SplashActivity"
+            android:name=".splash.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -30,17 +30,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.mvvm.sample.main.MainActivity"
+            android:name=".main.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.mvvm.sample.login.LoginActivity"
+            android:name=".login.LoginActivity"
             android:label="@string/login_title"
-            android:parentActivityName="com.mvvm.sample.register.RegisterActivity"
+            android:parentActivityName=".register.RegisterActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.mvvm.sample.register.RegisterActivity"
+            android:name=".register.RegisterActivity"
             android:label="@string/register_title"
             android:screenOrientation="portrait" />
     </application>

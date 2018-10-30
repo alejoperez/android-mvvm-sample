@@ -1,5 +1,7 @@
 package com.mvvm.sample.splash
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.os.Handler
 import com.mvvm.sample.R
@@ -10,9 +12,9 @@ import org.jetbrains.anko.startActivity
 
 private const val SPLASH_DELAY = 2000L
 
-class SplashActivity : BaseActivity(), ISplashContract.View {
+class SplashActivity : BaseActivity() {
 
-    private val presenter by lazy { SplashPresenter(this) }
+    private val viewModel by lazy { ViewModelProviders.of(this).get(SplashViewModel::class.java) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,12 +22,20 @@ class SplashActivity : BaseActivity(), ISplashContract.View {
         Handler().postDelayed({ goToNextScreen() }, SPLASH_DELAY)
     }
 
-    override fun goToNextScreen() {
-        if (presenter.isLoggedIn()) {
-            startActivity<MainActivity>()
-        } else {
-            startActivity<RegisterActivity>()
-        }
-        finish()
+    private fun goToNextScreen() {
+        viewModel.isUserLoggedEvent.observe(this, isUserLoggedObserver)
+        viewModel.isUserLoggedIn(this)
     }
+
+    private val isUserLoggedObserver = Observer<Boolean> { it ->
+        it?.let {
+            if (it) {
+                startActivity<MainActivity>()
+            } else {
+                startActivity<RegisterActivity>()
+            }
+            finish()
+        }
+    }
+
 }
