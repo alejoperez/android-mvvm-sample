@@ -33,7 +33,6 @@ class PhotosRepository private constructor(
                     } else {
                         listener.onPhotosFailure()
                     }
-                    listener.onPhotosSuccess(photos)
                 }
 
                 override fun onPhotosFailure() = listener.onPhotosFailure()
