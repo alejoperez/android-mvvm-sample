@@ -1,17 +1,16 @@
 package com.mvvm.sample.login
 
-import android.arch.lifecycle.ViewModel
 import android.content.Context
+import com.mvvm.sample.base.BaseViewModel
 import com.mvvm.sample.data.user.UserRepository
 import com.mvvm.sample.livedata.SingleLiveEvent
 import com.mvvm.sample.webservice.LoginRequest
 import com.mvvm.sample.webservice.LoginResponse
 
-class LoginViewModel: ViewModel(), UserRepository.ILoginListener {
+class LoginViewModel: BaseViewModel(), UserRepository.ILoginListener {
 
     val onLoginSuccess = SingleLiveEvent<Unit>()
     val onLoginFailure = SingleLiveEvent<Unit>()
-    val onNetworkError = SingleLiveEvent<Unit>()
 
     fun isValidEmail(email: String): Boolean = email.isNotEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
 

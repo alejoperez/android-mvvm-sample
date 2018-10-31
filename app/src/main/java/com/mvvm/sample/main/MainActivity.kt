@@ -1,7 +1,6 @@
 package com.mvvm.sample.main
 
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
@@ -19,7 +18,7 @@ import kotlinx.android.synthetic.main.toolbar.*
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    private val viewModel by lazy { ViewModelProviders.of(this).get(MainViewModel::class.java) }
+    private val viewModel by lazy { obtainViewModel(MainViewModel::class.java) }
 
     private val onLogoutSuccessObserver = Observer<Unit> {
         finishAffinity()

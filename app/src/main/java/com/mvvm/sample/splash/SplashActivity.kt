@@ -1,7 +1,6 @@
 package com.mvvm.sample.splash
 
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.os.Handler
 import com.mvvm.sample.R
@@ -14,7 +13,7 @@ private const val SPLASH_DELAY = 2000L
 
 class SplashActivity : BaseActivity() {
 
-    private val viewModel by lazy { ViewModelProviders.of(this).get(SplashViewModel::class.java) }
+    private val viewModel by lazy { obtainViewModel(SplashViewModel::class.java) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

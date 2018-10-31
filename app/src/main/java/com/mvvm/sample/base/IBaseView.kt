@@ -9,4 +9,6 @@ interface IBaseView {
     fun showAlert(textResource: Int)
 
     fun getViewContext(): Context
+
+    fun <T: BaseViewModel> obtainViewModel(clazz: Class<T>): T
 }

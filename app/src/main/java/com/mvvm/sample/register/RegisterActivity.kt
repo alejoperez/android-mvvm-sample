@@ -1,7 +1,6 @@
 package com.mvvm.sample.register
 
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.View
 import com.mvvm.sample.R
@@ -14,7 +13,7 @@ import org.jetbrains.anko.startActivity
 
 class RegisterActivity : BaseActivity() {
 
-    private val viewModel by lazy { ViewModelProviders.of(this).get(RegisterViewModel::class.java) }
+    private val viewModel by lazy { obtainViewModel(RegisterViewModel::class.java) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

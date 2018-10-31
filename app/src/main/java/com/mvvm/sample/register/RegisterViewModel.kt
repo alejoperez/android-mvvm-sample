@@ -1,17 +1,16 @@
 package com.mvvm.sample.register
 
-import android.arch.lifecycle.ViewModel
 import android.content.Context
+import com.mvvm.sample.base.BaseViewModel
 import com.mvvm.sample.data.user.UserRepository
 import com.mvvm.sample.livedata.SingleLiveEvent
 import com.mvvm.sample.webservice.RegisterRequest
 import com.mvvm.sample.webservice.RegisterResponse
 
-class RegisterViewModel: ViewModel(), UserRepository.IRegisterListener {
+class RegisterViewModel: BaseViewModel(), UserRepository.IRegisterListener {
 
     val onRegisterSuccess = SingleLiveEvent<Unit>()
     val onRegisterFailure = SingleLiveEvent<Unit>()
-    val onNetworkError = SingleLiveEvent<Unit>()
 
     fun isValidName(name: String): Boolean = name.isNotEmpty()
 

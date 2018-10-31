@@ -1,5 +1,6 @@
 package com.mvvm.sample.base
 
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.support.v4.app.Fragment
 import org.jetbrains.anko.alert
@@ -27,4 +28,6 @@ abstract class BaseFragment: Fragment(), IBaseView {
     }
 
     override fun getViewContext(): Context = fragmentContext
+
+    override fun <T : BaseViewModel> obtainViewModel(clazz: Class<T>): T = ViewModelProviders.of(this).get(clazz)
 }

@@ -1,7 +1,6 @@
 package com.mvvm.sample.photos
 
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -20,7 +19,7 @@ class PhotosFragment : BaseFragment(), PhotoItemView.OnPhotoClickListener {
         fun newInstance() = PhotosFragment()
     }
 
-    private val viewModel by lazy { ViewModelProviders.of(this).get(PhotosViewModel::class.java) }
+    private val viewModel by lazy { obtainViewModel(PhotosViewModel::class.java) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_photos, container, false)

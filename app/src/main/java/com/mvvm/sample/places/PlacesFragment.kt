@@ -1,7 +1,6 @@
 package com.mvvm.sample.places
 
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
@@ -27,7 +26,7 @@ class PlacesFragment: BaseFragment(), OnMapReadyCallback {
         fun newInstance() = PlacesFragment()
     }
 
-    private val viewModel by lazy { ViewModelProviders.of(this).get(PlacesViewModel::class.java) }
+    private val viewModel by lazy { obtainViewModel(PlacesViewModel::class.java) }
 
     private lateinit var googleMap: GoogleMap
 

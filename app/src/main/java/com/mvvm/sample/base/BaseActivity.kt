@@ -1,5 +1,6 @@
 package com.mvvm.sample.base
 
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.support.annotation.IdRes
 import android.support.v4.app.Fragment
@@ -38,4 +39,6 @@ abstract class BaseActivity : AppCompatActivity(), IBaseView {
     private fun isNewFragment(@IdRes fragmentId: Int, tag: String): Boolean = !getCurrentFragment(fragmentId)?.tag.equals(tag)
 
     private fun getCurrentFragment(@IdRes fragmentId: Int): Fragment? = supportFragmentManager.findFragmentById(fragmentId)
+
+    override fun <T : BaseViewModel> obtainViewModel(clazz: Class<T>): T = ViewModelProviders.of(this).get(clazz)
 }

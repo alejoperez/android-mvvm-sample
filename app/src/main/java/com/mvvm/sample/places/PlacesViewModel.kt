@@ -1,16 +1,15 @@
 package com.mvvm.sample.places
 
-import android.arch.lifecycle.ViewModel
 import android.content.Context
+import com.mvvm.sample.base.BaseViewModel
 import com.mvvm.sample.data.Place
 import com.mvvm.sample.data.places.PlacesRepository
 import com.mvvm.sample.livedata.SingleLiveEvent
 
-class PlacesViewModel: ViewModel(), PlacesRepository.IPlacesListener {
+class PlacesViewModel: BaseViewModel(), PlacesRepository.IPlacesListener {
 
     val onPlacesSuccess = SingleLiveEvent<List<Place>>()
     val onPlacesFailure = SingleLiveEvent<Unit>()
-    val onNetworkError = SingleLiveEvent<Unit>()
 
     fun getPlaces(context: Context) = PlacesRepository.getInstance().getPlaces(context, this)
 
