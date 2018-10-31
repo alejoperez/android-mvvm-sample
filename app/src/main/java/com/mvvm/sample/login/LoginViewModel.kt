@@ -3,7 +3,6 @@ package com.mvvm.sample.login
 import android.content.Context
 import com.mvvm.sample.base.BaseViewModel
 import com.mvvm.sample.data.user.UserRepository
-import com.mvvm.sample.livedata.SingleLiveEvent
 import com.mvvm.sample.webservice.LoginRequest
 import com.mvvm.sample.webservice.LoginResponse
 

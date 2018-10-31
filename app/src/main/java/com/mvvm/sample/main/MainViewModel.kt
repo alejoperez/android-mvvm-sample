@@ -4,7 +4,6 @@ import android.content.Context
 import com.mvvm.sample.base.BaseViewModel
 import com.mvvm.sample.data.User
 import com.mvvm.sample.data.user.UserRepository
-import com.mvvm.sample.livedata.SingleLiveEvent
 
 class MainViewModel : BaseViewModel() {
 

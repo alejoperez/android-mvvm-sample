@@ -1,11 +1,11 @@
 package com.mvvm.sample.register
 
-import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.view.View
 import com.mvvm.sample.R
 import com.mvvm.sample.base.BaseActivity
 import com.mvvm.sample.extensions.getWhiteSpaceFilters
+import com.mvvm.sample.livedata.EventObserver
 import com.mvvm.sample.login.LoginActivity
 import com.mvvm.sample.main.MainActivity
 import kotlinx.android.synthetic.main.activity_register.*
@@ -15,11 +15,23 @@ class RegisterActivity : BaseActivity() {
 
     private val viewModel by lazy { obtainViewModel(RegisterViewModel::class.java) }
 
+    private val onRegisterSuccessObserver = EventObserver<Unit> { onRegisterSuccess() }
+
+    private val onRegisterFailureObserver = EventObserver<Unit> { onRegisterFailure() }
+
+    private val onNetworkErrorObserver = EventObserver<Unit> { onNetworkError() }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
-        initView()
         initViewModel()
+        initView()
+    }
+
+    private fun initViewModel() {
+        viewModel.onRegisterSuccess.observe(this, onRegisterSuccessObserver)
+        viewModel.onRegisterFailure.observe(this, onRegisterFailureObserver)
+        viewModel.onNetworkError.observe(this, onNetworkErrorObserver)
     }
 
     private fun initView() {
@@ -35,11 +47,28 @@ class RegisterActivity : BaseActivity() {
         }
     }
 
-    private fun initViewModel() {
-        viewModel.onRegisterSuccess.observe(this, onRegisterSuccessObserver)
-        viewModel.onRegisterFailure.observe(this, onRegisterFailureObserver)
-        viewModel.onNetworkError.observe(this, onNetworkErrorObserver)
+    private fun onRegisterSuccess() {
+        hideProgress()
+        startActivity<MainActivity>()
+        finishAffinity()
     }
+
+    private fun onRegisterFailure() {
+        hideProgress()
+        showAlert(R.string.error_user_already_exists)
+    }
+
+    private fun onNetworkError() {
+        hideProgress()
+        showAlert(R.string.error_network)
+    }
+
+    private fun getName(): String = etName.text.toString()
+
+    private fun getEmail(): String = etEmail.text.toString()
+
+    private fun getPassword(): String = etPassword.text.toString()
+
 
     private fun onRegisterClicked() {
         if (viewModel.isValidForm(getName(), getEmail(), getPassword())) {
@@ -57,28 +86,6 @@ class RegisterActivity : BaseActivity() {
             }
         }
     }
-
-    private val onRegisterSuccessObserver = Observer<Unit> {
-        hideProgress()
-        startActivity<MainActivity>()
-        finishAffinity()
-    }
-
-    private val onRegisterFailureObserver = Observer<Unit> {
-        hideProgress()
-        showAlert(R.string.error_user_already_exists)
-    }
-
-    private val onNetworkErrorObserver = Observer<Unit> {
-        hideProgress()
-        showAlert(R.string.error_network)
-    }
-
-    private fun getName(): String = etName.text.toString()
-
-    private fun getEmail(): String = etEmail.text.toString()
-
-    private fun getPassword(): String = etPassword.text.toString()
 
     private fun showProgress() {
         btRegister.visibility = View.INVISIBLE

@@ -1,10 +1,10 @@
 package com.mvvm.sample.splash
 
-import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.os.Handler
 import com.mvvm.sample.R
 import com.mvvm.sample.base.BaseActivity
+import com.mvvm.sample.livedata.EventObserver
 import com.mvvm.sample.main.MainActivity
 import com.mvvm.sample.register.RegisterActivity
 import org.jetbrains.anko.startActivity
@@ -15,26 +15,26 @@ class SplashActivity : BaseActivity() {
 
     private val viewModel by lazy { obtainViewModel(SplashViewModel::class.java) }
 
+    private val isUserLoggedObserver = EventObserver<Boolean> { goToNextScreen(it) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-        Handler().postDelayed({ goToNextScreen() }, SPLASH_DELAY)
+        Handler().postDelayed({ checkIfUserLoggedIn() }, SPLASH_DELAY)
     }
 
-    private fun goToNextScreen() {
+    private fun checkIfUserLoggedIn() {
         viewModel.isUserLoggedEvent.observe(this, isUserLoggedObserver)
         viewModel.isUserLoggedIn(getViewContext())
     }
 
-    private val isUserLoggedObserver = Observer<Boolean> { it ->
-        it?.let {
-            if (it) {
-                startActivity<MainActivity>()
-            } else {
-                startActivity<RegisterActivity>()
-            }
-            finish()
+    private fun goToNextScreen(isUserLogged: Boolean) {
+        if (isUserLogged) {
+            startActivity<MainActivity>()
+        } else {
+            startActivity<RegisterActivity>()
         }
+        finish()
     }
 
 }

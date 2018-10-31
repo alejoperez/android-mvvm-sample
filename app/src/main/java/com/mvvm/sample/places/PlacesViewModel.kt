@@ -4,7 +4,6 @@ import android.content.Context
 import com.mvvm.sample.base.BaseViewModel
 import com.mvvm.sample.data.Place
 import com.mvvm.sample.data.places.PlacesRepository
-import com.mvvm.sample.livedata.SingleLiveEvent
 
 class PlacesViewModel: BaseViewModel(), PlacesRepository.IPlacesListener {
 

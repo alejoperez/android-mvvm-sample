@@ -4,7 +4,6 @@ import android.content.Context
 import com.mvvm.sample.base.BaseViewModel
 import com.mvvm.sample.data.Photo
 import com.mvvm.sample.data.photos.PhotosRepository
-import com.mvvm.sample.livedata.SingleLiveEvent
 
 class PhotosViewModel: BaseViewModel(), PhotosRepository.IPhotosListener {
 
