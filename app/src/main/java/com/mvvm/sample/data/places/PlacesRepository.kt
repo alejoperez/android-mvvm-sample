@@ -33,7 +33,6 @@ class PlacesRepository private constructor(
                     } else {
                         listener.onPlacesFailure()
                     }
-                    listener.onPlacesSuccess(places)
                 }
 
                 override fun onPlacesFailure() = listener.onPlacesFailure()

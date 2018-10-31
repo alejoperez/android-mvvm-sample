@@ -24,7 +24,7 @@ class SplashActivity : BaseActivity() {
 
     private fun goToNextScreen() {
         viewModel.isUserLoggedEvent.observe(this, isUserLoggedObserver)
-        viewModel.isUserLoggedIn(this)
+        viewModel.isUserLoggedIn(getViewContext())
     }
 
     private val isUserLoggedObserver = Observer<Boolean> { it ->

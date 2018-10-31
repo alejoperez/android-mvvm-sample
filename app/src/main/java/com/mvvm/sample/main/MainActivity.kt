@@ -81,7 +81,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 replaceFragment(PhotosFragment.newInstance(),R.id.main_content_view, PhotosFragment.TAG)
             }
             R.id.nav_logout -> {
-                viewModel.logout(this)
+                viewModel.logout(getViewContext())
             }
         }
 

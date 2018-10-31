@@ -45,7 +45,7 @@ class RegisterActivity : BaseActivity() {
     private fun onRegisterClicked() {
         if (viewModel.isValidForm(getName(), getEmail(), getPassword())) {
             showProgress()
-            viewModel.register(this, getName(), getEmail(), getPassword())
+            viewModel.register(getViewContext(), getName(), getEmail(), getPassword())
         } else {
             if (!viewModel.isValidName(getName())) {
                 etName.error = getString(R.string.error_name_empty)

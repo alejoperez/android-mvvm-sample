@@ -1,5 +1,7 @@
 package com.mvvm.sample.places
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
@@ -17,7 +19,7 @@ import com.mvvm.sample.base.BaseFragment
 import com.mvvm.sample.data.Place
 import kotlinx.android.synthetic.main.fragment_places.*
 
-class PlacesFragment: BaseFragment(), OnMapReadyCallback, IPlacesContract.View {
+class PlacesFragment: BaseFragment(), OnMapReadyCallback {
 
     companion object {
         private const val ZOOM = 4f
@@ -25,7 +27,7 @@ class PlacesFragment: BaseFragment(), OnMapReadyCallback, IPlacesContract.View {
         fun newInstance() = PlacesFragment()
     }
 
-    private val presenter by lazy { PlacesPresenter(this) }
+    private val viewModel by lazy { ViewModelProviders.of(this).get(PlacesViewModel::class.java) }
 
     private lateinit var googleMap: GoogleMap
 
@@ -37,28 +39,42 @@ class PlacesFragment: BaseFragment(), OnMapReadyCallback, IPlacesContract.View {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initViewModel()
+        initView()
+    }
 
+    private fun initViewModel() {
+        viewModel.onPlacesSuccess.observe(this,onPlacesSuccessObserver)
+        viewModel.onPlacesFailure.observe(this,onPlacesFailureObserver)
+        viewModel.onNetworkError.observe(this,onNetworkErrorObserver)
+    }
+
+    private fun initView() {
         val mapFragment = childFragmentManager.findFragmentById(R.id.fragmentMapPlaces) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        placesFabRandom.setOnClickListener {
-            fabView -> randomPlace(); Snackbar.make(fabView, R.string.places_random_message, Snackbar.LENGTH_LONG).show()
+        placesFabRandom.setOnClickListener { fabView ->
+            randomPlace(); Snackbar.make(fabView, R.string.places_random_message, Snackbar.LENGTH_LONG).show()
         }
     }
 
     override fun onMapReady(gm: GoogleMap) {
         googleMap = gm
-        presenter.getPlaces()
+        viewModel.getPlaces(getViewContext())
     }
 
-    override fun onPlacesFailure() {
+    private val onPlacesFailureObserver = Observer<Unit>{
         showAlert(R.string.error_loading_places)
     }
 
-   override fun onPlacesSuccess(places: List<Place>?) {
-       currentPlaces = places
-       loadPlacesInMap()
-       randomPlace()
+    private val onPlacesSuccessObserver = Observer<List<Place>> {
+        currentPlaces = it
+        loadPlacesInMap()
+        randomPlace()
+    }
+
+    private val onNetworkErrorObserver = Observer<Unit>{
+        showAlert(R.string.error_network)
     }
 
     private fun loadPlacesInMap() {
