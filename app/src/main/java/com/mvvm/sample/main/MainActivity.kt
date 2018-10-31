@@ -1,5 +1,7 @@
 package com.mvvm.sample.main
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
@@ -9,21 +11,40 @@ import android.view.MenuItem
 import android.widget.TextView
 import com.mvvm.sample.base.BaseActivity
 import com.mvvm.sample.R
+import com.mvvm.sample.data.User
 import com.mvvm.sample.photos.PhotosFragment
 import com.mvvm.sample.places.PlacesFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar.*
 
-class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, IMainContract.View {
+class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    private val presenter by lazy { MainPresenter(this) }
+    private val viewModel by lazy { ViewModelProviders.of(this).get(MainViewModel::class.java) }
+
+    private val onLogoutSuccessObserver = Observer<Unit> {
+        finishAffinity()
+    }
+
+    private val userObserver = Observer<User> {
+        val headerView = navView.getHeaderView(0)
+        val textViewUserName = headerView.findViewById(R.id.tvUserName) as TextView
+        val textViewUserEmail = headerView.findViewById(R.id.tvUserEmail) as TextView
+        textViewUserName.text = it?.name
+        textViewUserEmail.text = it?.email
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setToolbarTitle(R.string.app_name)
+        initViewModel()
         initView()
         replaceFragment(PlacesFragment.newInstance(),R.id.main_content_view, PlacesFragment.TAG)
+    }
+
+    private fun initViewModel() {
+        viewModel.user.observe(this, userObserver)
+        viewModel.onLogoutSuccess.observe(this, onLogoutSuccessObserver)
     }
 
     private fun initView() {
@@ -35,15 +56,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         navView.setNavigationItemSelectedListener(this)
         navView.menu.getItem(0).isChecked = true
 
-        loadUserInfo()
-    }
-
-    private fun loadUserInfo() {
-        val user = presenter.getUser()
-        val textViewUserName = navView.getHeaderView(0).findViewById(R.id.tvUserName) as TextView
-        val textViewUserEmail = navView.getHeaderView(0).findViewById(R.id.tvUserEmail) as TextView
-        textViewUserName.text = user?.name
-        textViewUserEmail.text = user?.email
+        viewModel.getUser()
     }
 
     override fun onBackPressed() {
@@ -68,8 +81,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 replaceFragment(PhotosFragment.newInstance(),R.id.main_content_view, PhotosFragment.TAG)
             }
             R.id.nav_logout -> {
-                presenter.logout()
-                finishAffinity()
+                viewModel.logout(this)
             }
         }
 
