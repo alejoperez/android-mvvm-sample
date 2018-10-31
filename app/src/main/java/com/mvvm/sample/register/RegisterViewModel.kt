@@ -21,9 +21,7 @@ class RegisterViewModel: ViewModel(), UserRepository.IRegisterListener {
 
     fun isValidForm(name: String, email: String, password: String): Boolean = isValidName(name) && isValidEmail(email) && isValidPassword(password)
 
-    fun register(context: Context, name: String, email: String, password: String) {
-        UserRepository.getInstance().register(context, RegisterRequest(name, email, password),this)
-    }
+    fun register(context: Context, name: String, email: String, password: String) = UserRepository.getInstance().register(context, RegisterRequest(name, email, password),this)
 
     override fun onRegisterSuccess(response: RegisterResponse?) = onRegisterSuccess.call()
 
