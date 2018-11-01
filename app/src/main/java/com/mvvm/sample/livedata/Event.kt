@@ -1,7 +1,5 @@
 package com.mvvm.sample.livedata
 
-import android.arch.lifecycle.Observer
-
 /**
  * Used as a wrapper for data that is exposed via a LiveData that represents an event.
  */

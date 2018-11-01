@@ -1,15 +1,17 @@
 package com.mvvm.sample.login
 
+import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import com.mvvm.sample.base.BaseViewModel
 import com.mvvm.sample.data.user.UserRepository
+import com.mvvm.sample.livedata.Event
 import com.mvvm.sample.webservice.LoginRequest
 import com.mvvm.sample.webservice.LoginResponse
 
 class LoginViewModel: BaseViewModel(), UserRepository.ILoginListener {
 
-    val onLoginSuccess = SingleLiveEvent<Unit>()
-    val onLoginFailure = SingleLiveEvent<Unit>()
+    val onLoginSuccess = MutableLiveData<Event<Unit>>()
+    val onLoginFailure = MutableLiveData<Event<Unit>>()
 
     fun isValidEmail(email: String): Boolean = email.isNotEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
 
@@ -19,11 +21,17 @@ class LoginViewModel: BaseViewModel(), UserRepository.ILoginListener {
 
     fun login(context: Context, email: String, password: String) = UserRepository.getInstance().login(context, LoginRequest(email, password),this)
 
-    override fun onLoginSuccess(response: LoginResponse?) = onLoginSuccess.call()
+    override fun onLoginSuccess(response: LoginResponse?) {
+        onLoginSuccess.value = Event(Unit)
+    }
 
-    override fun onLoginFailure() = onLoginFailure.call()
+    override fun onLoginFailure() {
+        onLoginFailure.value = Event(Unit)
+    }
 
-    override fun onNetworkError() = onNetworkError.call()
+    override fun onNetworkError() {
+        onNetworkError.value = Event(Unit)
+    }
 
 
 }

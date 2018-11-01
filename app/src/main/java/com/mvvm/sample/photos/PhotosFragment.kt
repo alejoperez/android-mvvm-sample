@@ -1,6 +1,5 @@
 package com.mvvm.sample.photos
 
-import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -9,6 +8,7 @@ import android.view.ViewGroup
 import com.mvvm.sample.R
 import com.mvvm.sample.base.BaseFragment
 import com.mvvm.sample.data.Photo
+import com.mvvm.sample.livedata.EventObserver
 import com.mvvm.sample.view.SimpleDividerItemDecorator
 import kotlinx.android.synthetic.main.fragment_photos.*
 
@@ -20,6 +20,12 @@ class PhotosFragment : BaseFragment(), PhotoItemView.OnPhotoClickListener {
     }
 
     private val viewModel by lazy { obtainViewModel(PhotosViewModel::class.java) }
+
+    private val onPhotosSuccessObserver = EventObserver<List<Photo>?> { onPhotosSuccess(it) }
+
+    private val onPhotosFailureObserver = EventObserver<Unit> { onPhotosFailure() }
+
+    private val onNetworkErrorObserver = EventObserver<Unit> { onNetworkError() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_photos, container, false)
@@ -42,7 +48,7 @@ class PhotosFragment : BaseFragment(), PhotoItemView.OnPhotoClickListener {
         showProgress()
     }
 
-    private val onPhotosSuccessObserver = Observer<List<Photo>> {
+    private fun onPhotosSuccess(it: List<Photo>?) {
         hideProgress()
         rvPhotos.apply {
             layoutManager = LinearLayoutManager(getViewContext())
@@ -52,12 +58,12 @@ class PhotosFragment : BaseFragment(), PhotoItemView.OnPhotoClickListener {
         }
     }
 
-    private val onPhotosFailureObserver = Observer<Unit> {
+    private fun onPhotosFailure() {
         hideProgress()
         showAlert(R.string.error_loading_photos)
     }
 
-    private val onNetworkErrorObserver = Observer<Unit> {
+    private fun onNetworkError() {
         hideProgress()
         showAlert(R.string.error_network)
     }

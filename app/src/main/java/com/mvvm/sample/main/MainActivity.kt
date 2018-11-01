@@ -1,6 +1,5 @@
 package com.mvvm.sample.main
 
-import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
@@ -11,6 +10,7 @@ import android.widget.TextView
 import com.mvvm.sample.base.BaseActivity
 import com.mvvm.sample.R
 import com.mvvm.sample.data.User
+import com.mvvm.sample.livedata.EventObserver
 import com.mvvm.sample.photos.PhotosFragment
 import com.mvvm.sample.places.PlacesFragment
 import kotlinx.android.synthetic.main.activity_main.*
@@ -20,17 +20,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private val viewModel by lazy { obtainViewModel(MainViewModel::class.java) }
 
-    private val onLogoutSuccessObserver = Observer<Unit> {
-        finishAffinity()
-    }
-
-    private val userObserver = Observer<User> {
-        val headerView = navView.getHeaderView(0)
-        val textViewUserName = headerView.findViewById(R.id.tvUserName) as TextView
-        val textViewUserEmail = headerView.findViewById(R.id.tvUserEmail) as TextView
-        textViewUserName.text = it?.name
-        textViewUserEmail.text = it?.email
-    }
+    private val onLogoutSuccessObserver = EventObserver<Unit> { finishAffinity() }
+    private val userObserver = EventObserver<User?> { onUserSuccess(it) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +35,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private fun initViewModel() {
         viewModel.user.observe(this, userObserver)
         viewModel.onLogoutSuccess.observe(this, onLogoutSuccessObserver)
+    }
+
+    private fun onUserSuccess(user: User?) {
+        val headerView = navView.getHeaderView(0)
+        val textViewUserName = headerView.findViewById(R.id.tvUserName) as TextView
+        val textViewUserEmail = headerView.findViewById(R.id.tvUserEmail) as TextView
+        textViewUserName.text = user?.name
+        textViewUserEmail.text = user?.email
     }
 
     private fun initView() {

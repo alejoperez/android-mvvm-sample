@@ -1,6 +1,5 @@
 package com.mvvm.sample.places
 
-import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
@@ -16,6 +15,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.mvvm.sample.R
 import com.mvvm.sample.base.BaseFragment
 import com.mvvm.sample.data.Place
+import com.mvvm.sample.livedata.EventObserver
 import kotlinx.android.synthetic.main.fragment_places.*
 
 class PlacesFragment: BaseFragment(), OnMapReadyCallback {
@@ -27,6 +27,12 @@ class PlacesFragment: BaseFragment(), OnMapReadyCallback {
     }
 
     private val viewModel by lazy { obtainViewModel(PlacesViewModel::class.java) }
+
+    private val onPlacesFailureObserver = EventObserver<Unit>{ onPlacesFailure() }
+
+    private val onPlacesSuccessObserver = EventObserver<List<Place>?> { onPlacesSuccess(it) }
+
+    private val onNetworkErrorObserver = EventObserver<Unit>{ onNetworkError() }
 
     private lateinit var googleMap: GoogleMap
 
@@ -62,17 +68,17 @@ class PlacesFragment: BaseFragment(), OnMapReadyCallback {
         viewModel.getPlaces(getViewContext())
     }
 
-    private val onPlacesFailureObserver = Observer<Unit>{
-        showAlert(R.string.error_loading_places)
-    }
-
-    private val onPlacesSuccessObserver = Observer<List<Place>> {
+    private fun onPlacesSuccess(it: List<Place>?) {
         currentPlaces = it
         loadPlacesInMap()
         randomPlace()
     }
 
-    private val onNetworkErrorObserver = Observer<Unit>{
+    private fun onPlacesFailure() {
+        showAlert(R.string.error_loading_places)
+    }
+
+    private fun onNetworkError() {
         showAlert(R.string.error_network)
     }
 

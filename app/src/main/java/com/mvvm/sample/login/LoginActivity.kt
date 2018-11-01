@@ -1,11 +1,11 @@
 package com.mvvm.sample.login
 
-import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.view.View
 import com.mvvm.sample.R
 import com.mvvm.sample.base.BaseActivity
 import com.mvvm.sample.extensions.getWhiteSpaceFilters
+import com.mvvm.sample.livedata.EventObserver
 import com.mvvm.sample.main.MainActivity
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.startActivity
@@ -13,6 +13,12 @@ import org.jetbrains.anko.startActivity
 class LoginActivity : BaseActivity() {
 
     private val viewModel by lazy { obtainViewModel(LoginViewModel::class.java) }
+
+    private val onLoginSuccessObserver = EventObserver<Unit> { onLoginSuccess() }
+
+    private val onLoginFailureObserver = EventObserver<Unit> { onLoginFailure() }
+
+    private val onNetworkErrorObserver = EventObserver<Unit> { onNetworkError() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,18 +60,18 @@ class LoginActivity : BaseActivity() {
 
     private fun getPassword(): String = etPassword.text.toString()
 
-    private val onLoginSuccessObserver = Observer<Unit> {
+    private fun onLoginSuccess() {
         hideProgress()
         startActivity<MainActivity>()
         finishAffinity()
     }
 
-    private val onLoginFailureObserver = Observer<Unit> {
+    private fun onLoginFailure() {
         hideProgress()
         showAlert(R.string.error_invalid_credentials)
     }
 
-    private val onNetworkErrorObserver = Observer<Unit> {
+    private fun onNetworkError() {
         hideProgress()
         showAlert(R.string.error_network)
     }
