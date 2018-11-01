@@ -1,10 +1,11 @@
 package com.mvvm.sample.base
 
+import android.app.Application
+import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
 import com.mvvm.sample.livedata.Event
 
-abstract class BaseViewModel: ViewModel() {
+abstract class BaseViewModel(application: Application): AndroidViewModel(application) {
 
     val onNetworkError = MutableLiveData<Event<Unit>>()
 }

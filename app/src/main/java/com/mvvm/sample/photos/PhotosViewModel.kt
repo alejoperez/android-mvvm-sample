@@ -1,19 +1,19 @@
 package com.mvvm.sample.photos
 
+import android.app.Application
 import android.arch.lifecycle.MutableLiveData
-import android.content.Context
 import com.mvvm.sample.base.BaseViewModel
 import com.mvvm.sample.data.Photo
 import com.mvvm.sample.data.photos.PhotosRepository
 import com.mvvm.sample.livedata.Event
 
-class PhotosViewModel: BaseViewModel(), PhotosRepository.IPhotosListener {
+class PhotosViewModel(application: Application): BaseViewModel(application), PhotosRepository.IPhotosListener {
 
     val onPhotosSuccess = MutableLiveData<Event<List<Photo>?>>()
     val onPhotosFailure = MutableLiveData<Event<Unit>>()
 
-    fun getPhotos(context: Context) {
-        PhotosRepository.getInstance().getPhotos(context, this)
+    fun getPhotos() {
+        PhotosRepository.getInstance().getPhotos(getApplication(), this)
     }
 
     override fun onPhotosSuccess(photos: List<Photo>?) {

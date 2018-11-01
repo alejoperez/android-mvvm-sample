@@ -65,7 +65,7 @@ class PlacesFragment: BaseFragment(), OnMapReadyCallback {
 
     override fun onMapReady(gm: GoogleMap) {
         googleMap = gm
-        viewModel.getPlaces(getViewContext())
+        viewModel.getPlaces()
     }
 
     private fun onPlacesSuccess(it: List<Place>?) {

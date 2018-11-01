@@ -25,7 +25,7 @@ class SplashActivity : BaseActivity() {
 
     private fun checkIfUserLoggedIn() {
         viewModel.isUserLoggedEvent.observe(this, isUserLoggedObserver)
-        viewModel.isUserLoggedIn(getViewContext())
+        viewModel.isUserLoggedIn()
     }
 
     private fun goToNextScreen(isUserLogged: Boolean) {

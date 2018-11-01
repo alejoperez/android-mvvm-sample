@@ -1,14 +1,14 @@
 package com.mvvm.sample.login
 
+import android.app.Application
 import android.arch.lifecycle.MutableLiveData
-import android.content.Context
 import com.mvvm.sample.base.BaseViewModel
 import com.mvvm.sample.data.user.UserRepository
 import com.mvvm.sample.livedata.Event
 import com.mvvm.sample.webservice.LoginRequest
 import com.mvvm.sample.webservice.LoginResponse
 
-class LoginViewModel: BaseViewModel(), UserRepository.ILoginListener {
+class LoginViewModel(application: Application): BaseViewModel(application), UserRepository.ILoginListener {
 
     val onLoginSuccess = MutableLiveData<Event<Unit>>()
     val onLoginFailure = MutableLiveData<Event<Unit>>()
@@ -19,7 +19,7 @@ class LoginViewModel: BaseViewModel(), UserRepository.ILoginListener {
 
     fun isValidForm(email: String, password: String): Boolean = isValidEmail(email) && isValidPassword(password)
 
-    fun login(context: Context, email: String, password: String) = UserRepository.getInstance().login(context, LoginRequest(email, password),this)
+    fun login(email: String, password: String) = UserRepository.getInstance().login(getApplication(), LoginRequest(email, password),this)
 
     override fun onLoginSuccess(response: LoginResponse?) {
         onLoginSuccess.value = Event(Unit)

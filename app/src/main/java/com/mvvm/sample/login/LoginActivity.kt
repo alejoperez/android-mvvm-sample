@@ -45,7 +45,7 @@ class LoginActivity : BaseActivity() {
     private fun onLoginClicked() {
         if (viewModel.isValidForm(getEmail(), getPassword())) {
             showProgress()
-            viewModel.login(this, getEmail(), getPassword())
+            viewModel.login(getEmail(), getPassword())
         } else {
             if (!viewModel.isValidEmail(getEmail())) {
                 etEmail.error = getString(R.string.error_invalid_email)

@@ -44,7 +44,7 @@ class PhotosFragment : BaseFragment(), PhotoItemView.OnPhotoClickListener {
     }
 
     private fun getPhotos() {
-        viewModel.getPhotos(getViewContext())
+        viewModel.getPhotos()
         showProgress()
     }
 

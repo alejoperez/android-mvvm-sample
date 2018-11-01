@@ -1,14 +1,14 @@
 package com.mvvm.sample.register
 
+import android.app.Application
 import android.arch.lifecycle.MutableLiveData
-import android.content.Context
 import com.mvvm.sample.base.BaseViewModel
 import com.mvvm.sample.data.user.UserRepository
 import com.mvvm.sample.livedata.Event
 import com.mvvm.sample.webservice.RegisterRequest
 import com.mvvm.sample.webservice.RegisterResponse
 
-class RegisterViewModel: BaseViewModel(), UserRepository.IRegisterListener {
+class RegisterViewModel(application: Application): BaseViewModel(application), UserRepository.IRegisterListener {
 
     val onRegisterSuccess = MutableLiveData<Event<Unit>>()
     val onRegisterFailure = MutableLiveData<Event<Unit>>()
@@ -21,7 +21,7 @@ class RegisterViewModel: BaseViewModel(), UserRepository.IRegisterListener {
 
     fun isValidForm(name: String, email: String, password: String): Boolean = isValidName(name) && isValidEmail(email) && isValidPassword(password)
 
-    fun register(context: Context, name: String, email: String, password: String) = UserRepository.getInstance().register(context, RegisterRequest(name, email, password),this)
+    fun register(name: String, email: String, password: String) = UserRepository.getInstance().register(getApplication(), RegisterRequest(name, email, password),this)
 
     override fun onRegisterSuccess(response: RegisterResponse?) {
         onRegisterSuccess.value = Event(Unit)

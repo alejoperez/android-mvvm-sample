@@ -1,17 +1,17 @@
 package com.mvvm.sample.splash
 
+import android.app.Application
 import android.arch.lifecycle.MutableLiveData
-import android.content.Context
 import com.mvvm.sample.base.BaseViewModel
 import com.mvvm.sample.data.user.UserRepository
 import com.mvvm.sample.livedata.Event
 
-class SplashViewModel: BaseViewModel() {
+class SplashViewModel(application: Application): BaseViewModel(application) {
 
     val isUserLoggedEvent = MutableLiveData<Event<Boolean>>()
 
-    fun isUserLoggedIn(context: Context) {
-        isUserLoggedEvent.value = Event(UserRepository.getInstance().isLoggedIn(context))
+    fun isUserLoggedIn() {
+        isUserLoggedEvent.value = Event(UserRepository.getInstance().isLoggedIn(getApplication()))
     }
 
 }
