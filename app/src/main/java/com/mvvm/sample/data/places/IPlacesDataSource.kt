@@ -7,5 +7,5 @@ interface IPlacesDataSource {
 
     fun getPlaces(context: Context, listener: PlacesRepository.IPlacesListener)
 
-    fun savePlaces(places: List<Place>)
+    fun savePlaces(context: Context, places: List<Place>)
 }

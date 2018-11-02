@@ -14,10 +14,10 @@ buildscript {
     ext.gradle_version = '3.2.0'
     ext.retrofit_version = '2.4.0'
     ext.okhttp3_version = '3.11.0'
-    ext.realm_version = '5.7.0'
     ext.google_services_version = '16.0.0'
     ext.glide_version = '4.8.0'
     ext.lifecycle_version = '1.1.1'
+    ext.room_version = "1.1.1"
 
 
     repositories {
@@ -28,7 +28,6 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:$tools_build_gradle_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "io.realm:realm-gradle-plugin:$realm_version"
     }
 }
 

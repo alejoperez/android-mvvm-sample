@@ -28,7 +28,7 @@ class PlacesRepository private constructor(
 
                 override fun onPlacesSuccess(places: List<Place>?) {
                     if (places != null) {
-                        savePlaces(places)
+                        savePlaces(context, places)
                         listener.onPlacesSuccess(places)
                     } else {
                         listener.onPlacesFailure()
@@ -42,8 +42,8 @@ class PlacesRepository private constructor(
         }
     }
 
-    override fun savePlaces(places: List<Place>) {
-        localDataSource.savePlaces(places)
+    override fun savePlaces(context: Context,places: List<Place>) {
+        localDataSource.savePlaces(context, places)
     }
 
     fun invalidateCache() {

@@ -9,7 +9,7 @@ import java.lang.UnsupportedOperationException
 
 class PhotosRemoteDataSource : IPhotosDataSource {
 
-    override fun savePhotos(photos: List<Photo>) = throw UnsupportedOperationException()
+    override fun savePhotos(context: Context, photos: List<Photo>) = throw UnsupportedOperationException()
 
     override fun getPhotos(context: Context, listener: PhotosRepository.IPhotosListener) {
         val service = WebService.createService(context, IApi::class.java)

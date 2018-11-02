@@ -2,18 +2,14 @@ package com.mvvm.sample.data.photos
 
 import android.content.Context
 import com.mvvm.sample.data.Photo
-import io.realm.Realm
+import com.mvvm.sample.data.SampleDataBase
 
 class PhotosLocalDataSource: IPhotosDataSource {
 
-    override fun savePhotos(photos: List<Photo>) {
-        Realm.getDefaultInstance().executeTransactionAsync {
-            realm -> realm.insertOrUpdate(photos)
-        }
-    }
+    override fun savePhotos(context: Context, photos: List<Photo>) = SampleDataBase.getInstance(context).photoDao().savePhotos(photos)
 
     override fun getPhotos(context: Context, listener: PhotosRepository.IPhotosListener) {
-        listener.onPhotosSuccess(Realm.getDefaultInstance().where(Photo::class.java).findAll())
+        listener.onPhotosSuccess(SampleDataBase.getInstance(context).photoDao().getPhotos())
     }
 
 }

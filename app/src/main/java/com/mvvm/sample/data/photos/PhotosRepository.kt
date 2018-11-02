@@ -28,7 +28,7 @@ class PhotosRepository private constructor(
 
                 override fun onPhotosSuccess(photos: List<Photo>?) {
                     if (photos != null) {
-                        savePhotos(photos)
+                        savePhotos(context, photos)
                         listener.onPhotosSuccess(photos)
                     } else {
                         listener.onPhotosFailure()
@@ -42,8 +42,8 @@ class PhotosRepository private constructor(
         }
     }
 
-    override fun savePhotos(photos: List<Photo>) {
-        localDataSource.savePhotos(photos)
+    override fun savePhotos(context: Context,photos: List<Photo>) {
+        localDataSource.savePhotos(context, photos)
     }
 
     fun invalidateCache() {

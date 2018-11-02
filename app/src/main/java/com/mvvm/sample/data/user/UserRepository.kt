@@ -22,16 +22,16 @@ class UserRepository private constructor(
         }
     }
 
-    override fun saveUser(user: User) = localDataSource.saveUser(user)
+    override fun saveUser(context: Context,user: User) = localDataSource.saveUser(context,user)
 
-    override fun getUser(): User? = localDataSource.getUser()
+    override fun getUser(context: Context): User? = localDataSource.getUser(context)
 
     override fun login(context: Context, request: LoginRequest, listener: ILoginListener) {
         remoteDataSource.login(context, request, object : ILoginListener {
             override fun onLoginSuccess(response: LoginResponse?) {
                 response?.let {
                     PreferenceManager<String>(context).putPreference(PreferenceManager.ACCESS_TOKEN,response.accessToken)
-                    localDataSource.saveUser(response.toUser())
+                    localDataSource.saveUser(context, response.toUser())
                     listener.onLoginSuccess(response)
                 }
             }
@@ -47,7 +47,7 @@ class UserRepository private constructor(
             override fun onRegisterSuccess(response: RegisterResponse?) {
                 response?.let {
                     PreferenceManager<String>(context).putPreference(PreferenceManager.ACCESS_TOKEN, response.accessToken)
-                    localDataSource.saveUser(response.toUser())
+                    localDataSource.saveUser(context, response.toUser())
                     listener.onRegisterSuccess(response)
                 }
             }

@@ -9,7 +9,7 @@ import java.lang.UnsupportedOperationException
 
 class PlacesRemoteDataSource : IPlacesDataSource {
 
-    override fun savePlaces(places: List<Place>) = throw UnsupportedOperationException()
+    override fun savePlaces(context: Context, places: List<Place>) = throw UnsupportedOperationException()
 
     override fun getPlaces(context: Context, listener: PlacesRepository.IPlacesListener) {
         val service = WebService.createService(context, IApi::class.java)

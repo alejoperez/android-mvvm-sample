@@ -13,7 +13,7 @@ class MainViewModel(application: Application) : BaseViewModel(application) {
     val onLogoutSuccess = MutableLiveData<Event<Unit>>()
 
     fun getUser() {
-        user.value = Event(UserRepository.getInstance().getUser())
+        user.value = Event(UserRepository.getInstance().getUser(getApplication()))
     }
 
     fun logout() {

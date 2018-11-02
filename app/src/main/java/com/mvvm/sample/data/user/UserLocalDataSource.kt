@@ -1,23 +1,19 @@
 package com.mvvm.sample.data.user
 
 import android.content.Context
+import com.mvvm.sample.data.SampleDataBase
 import com.mvvm.sample.data.User
 import com.mvvm.sample.storage.PreferenceManager
 import com.mvvm.sample.webservice.LoginRequest
 import com.mvvm.sample.webservice.RegisterRequest
-import io.realm.Realm
 
 class UserLocalDataSource : IUserDataSource {
 
     override fun isLoggedIn(context: Context): Boolean = PreferenceManager<String>(context).findPreference(PreferenceManager.ACCESS_TOKEN,"").isNotEmpty()
 
-    override fun getUser(): User? = Realm.getDefaultInstance().where(User::class.java).findFirst()
+    override fun getUser(context: Context): User? = SampleDataBase.getInstance(context).userDao().getUser()
 
-    override fun saveUser(user: User) {
-        Realm.getDefaultInstance().executeTransactionAsync{
-            realm -> realm.insertOrUpdate(user)
-        }
-    }
+    override fun saveUser(context: Context, user: User) = SampleDataBase.getInstance(context).userDao().saveUser(user)
 
     override fun logout(context: Context) = PreferenceManager<String>(context).putPreference(PreferenceManager.ACCESS_TOKEN,"")
 

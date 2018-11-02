@@ -1,21 +1,13 @@
 package com.mvvm.sample.data
 
-import io.realm.RealmObject
-import io.realm.annotations.PrimaryKey
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.PrimaryKey
 
-open class User(@PrimaryKey var id: Long = 0L,
-                var name: String = "",
-                var email: String = ""): RealmObject()
+@Entity
+data class User(@PrimaryKey val id: Long, val name: String, val email: String)
 
-open class Place(@PrimaryKey var id: Long = 0L,
-            var companyName: String = "",
-            var address: String = "",
-            var lat: Double = 0.0,
-            var lon: Double = 0.0): RealmObject()
+@Entity
+data class Place(@PrimaryKey val id: Long, val companyName: String, val address: String, val lat: Double, val lon: Double)
 
-
-open class Photo(@PrimaryKey var id: Long = 0L,
-            var albumId: String = "",
-            var title: String = "",
-            var url: String = "",
-            var thumbnailUrl: String = ""): RealmObject()
+@Entity
+data class Photo(@PrimaryKey val id: Long, val albumId: String, val title: String, val url: String, val thumbnailUrl: String)

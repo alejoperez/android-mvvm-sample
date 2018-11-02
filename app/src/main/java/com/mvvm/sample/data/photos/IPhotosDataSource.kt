@@ -7,6 +7,6 @@ interface IPhotosDataSource {
 
     fun getPhotos(context: Context, listener: PhotosRepository.IPhotosListener)
 
-    fun savePhotos(photos: List<Photo>)
+    fun savePhotos(context: Context, photos: List<Photo>)
 
 }
