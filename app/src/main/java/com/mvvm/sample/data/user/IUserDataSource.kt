@@ -6,7 +6,7 @@ import com.mvvm.sample.webservice.LoginRequest
 import com.mvvm.sample.webservice.RegisterRequest
 
 interface IUserDataSource {
-    fun getUser(context: Context): User?
+    fun getUser(context: Context, listener: UserRepository.IUserListener)
     fun saveUser(context: Context,user: User)
     fun login(context: Context, request: LoginRequest, listener: UserRepository.ILoginListener)
     fun register(context: Context, request: RegisterRequest, listener: UserRepository.IRegisterListener)

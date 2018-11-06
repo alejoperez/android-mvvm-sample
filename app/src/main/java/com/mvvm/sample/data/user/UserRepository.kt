@@ -24,7 +24,7 @@ class UserRepository private constructor(
 
     override fun saveUser(context: Context,user: User) = localDataSource.saveUser(context,user)
 
-    override fun getUser(context: Context): User? = localDataSource.getUser(context)
+    override fun getUser(context: Context, listener: IUserListener) = localDataSource.getUser(context, listener)
 
     override fun login(context: Context, request: LoginRequest, listener: ILoginListener) {
         remoteDataSource.login(context, request, object : ILoginListener {
@@ -69,6 +69,11 @@ class UserRepository private constructor(
 
     interface ILoginListener : IBaseSourceListener {
         fun onLoginSuccess(response: LoginResponse?)
+        fun onLoginFailure()
+    }
+
+    interface IUserListener : IBaseSourceListener {
+        fun onUserSuccess(user: User?)
         fun onLoginFailure()
     }
 

@@ -30,6 +30,7 @@ class PlacesRepository private constructor(
                     if (places != null) {
                         savePlaces(context, places)
                         listener.onPlacesSuccess(places)
+                        hasCache = true
                     } else {
                         listener.onPlacesFailure()
                     }

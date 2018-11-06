@@ -46,7 +46,7 @@ class UserRemoteDataSource : IUserDataSource {
 
     override fun logout(context: Context) = throw UnsupportedOperationException()
 
-    override fun getUser(context: Context): User? = throw UnsupportedOperationException()
+    override fun getUser(context: Context, listener: UserRepository.IUserListener) = throw UnsupportedOperationException()
 
     override fun saveUser(context: Context, user: User) = throw UnsupportedOperationException()
 

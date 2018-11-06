@@ -30,6 +30,7 @@ class PhotosRepository private constructor(
                     if (photos != null) {
                         savePhotos(context, photos)
                         listener.onPhotosSuccess(photos)
+                        hasCache = true
                     } else {
                         listener.onPhotosFailure()
                     }

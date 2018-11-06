@@ -33,7 +33,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun initViewModel() {
-        viewModel.user.observe(this, userObserver)
+        viewModel.userEvent.observe(this, userObserver)
         viewModel.onLogoutSuccess.observe(this, onLogoutSuccessObserver)
     }
 
