@@ -1,31 +1,24 @@
 package com.mvvm.sample.main
 
 import android.app.Application
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.Transformations
 import com.mvvm.sample.base.BaseViewModel
 import com.mvvm.sample.data.User
 import com.mvvm.sample.data.user.UserRepository
 import com.mvvm.sample.livedata.Event
 
-class MainViewModel(application: Application) : BaseViewModel(application), UserRepository.IUserListener {
+class MainViewModel(application: Application) : BaseViewModel(application) {
 
-    val userEvent = MutableLiveData<Event<User?>>()
+    private val getUserEvent = MutableLiveData<Event<Unit>>()
+    val userEvent: LiveData<User?> = Transformations.switchMap(getUserEvent) {
+        UserRepository.getInstance().getUser(getApplication())
+    }
     val onLogoutSuccess = MutableLiveData<Event<Unit>>()
 
     fun getUser() {
-        UserRepository.getInstance().getUser(getApplication(), this)
-    }
-
-    override fun onUserSuccess(user: User?) {
-        userEvent.value = Event(user)
-    }
-
-    override fun onLoginFailure() {
-        userEvent.value = Event(null)
-    }
-
-    override fun onNetworkError() {
-        userEvent.value = Event(null)
+        getUserEvent.value = Event(Unit)
     }
 
     fun logout() {

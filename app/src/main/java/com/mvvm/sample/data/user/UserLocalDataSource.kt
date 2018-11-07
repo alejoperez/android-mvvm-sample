@@ -1,5 +1,6 @@
 package com.mvvm.sample.data.user
 
+import android.arch.lifecycle.LiveData
 import android.content.Context
 import com.mvvm.sample.data.SampleDataBase
 import com.mvvm.sample.data.User
@@ -7,20 +8,12 @@ import com.mvvm.sample.storage.PreferenceManager
 import com.mvvm.sample.webservice.LoginRequest
 import com.mvvm.sample.webservice.RegisterRequest
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
 
 class UserLocalDataSource : IUserDataSource {
 
     override fun isLoggedIn(context: Context): Boolean = PreferenceManager<String>(context).findPreference(PreferenceManager.ACCESS_TOKEN,"").isNotEmpty()
 
-    override fun getUser(context: Context, listener: UserRepository.IUserListener)  {
-        doAsync {
-            val user = SampleDataBase.getInstance(context).userDao().getUser()
-            uiThread {
-                listener.onUserSuccess(user)
-            }
-        }
-    }
+    override fun getUser(context: Context): LiveData<User?> = SampleDataBase.getInstance(context).userDao().getUser()
 
     override fun saveUser(context: Context, user: User) {
         doAsync {

@@ -1,5 +1,6 @@
 package com.mvvm.sample.data.user
 
+import android.arch.lifecycle.LiveData
 import android.content.Context
 import com.mvvm.sample.data.User
 import com.mvvm.sample.extensions.enqueue
@@ -46,7 +47,7 @@ class UserRemoteDataSource : IUserDataSource {
 
     override fun logout(context: Context) = throw UnsupportedOperationException()
 
-    override fun getUser(context: Context, listener: UserRepository.IUserListener) = throw UnsupportedOperationException()
+    override fun getUser(context: Context): LiveData<User?> = throw UnsupportedOperationException()
 
     override fun saveUser(context: Context, user: User) = throw UnsupportedOperationException()
 

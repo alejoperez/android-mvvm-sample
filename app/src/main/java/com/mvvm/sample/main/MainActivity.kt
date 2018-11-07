@@ -1,5 +1,6 @@
 package com.mvvm.sample.main
 
+import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
@@ -21,7 +22,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private val viewModel by lazy { obtainViewModel(MainViewModel::class.java) }
 
     private val onLogoutSuccessObserver = EventObserver<Unit> { finishAffinity() }
-    private val userObserver = EventObserver<User?> { onUserSuccess(it) }
+    private val userEventObserver = Observer<User?> { onUserSuccess(it) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +34,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun initViewModel() {
-        viewModel.userEvent.observe(this, userObserver)
+        viewModel.userEvent.observe(this, userEventObserver)
         viewModel.onLogoutSuccess.observe(this, onLogoutSuccessObserver)
     }
 
