@@ -12,7 +12,12 @@ abstract class DataRequest<Data> {
         val liveData = dataRequestToObserve()
         result.addSource(liveData) {
             result.removeSource(liveData)
-            result.value = DataResource.success(it)
+            if (it != null) {
+                result.value = DataResource.success(it)
+            }else {
+                result.value = DataResource.failure()
+            }
+
         }
         return result
     }
