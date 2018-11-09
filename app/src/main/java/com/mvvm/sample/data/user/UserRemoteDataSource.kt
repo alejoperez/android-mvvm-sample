@@ -2,52 +2,19 @@ package com.mvvm.sample.data.user
 
 import android.arch.lifecycle.LiveData
 import android.content.Context
-import com.mvvm.sample.data.User
-import com.mvvm.sample.extensions.enqueue
-import com.mvvm.sample.webservice.IApi
-import com.mvvm.sample.webservice.LoginRequest
-import com.mvvm.sample.webservice.RegisterRequest
-import com.mvvm.sample.webservice.WebService
+import com.mvvm.sample.data.room.User
+import com.mvvm.sample.livedata.DataResource
+import com.mvvm.sample.webservice.*
 
 class UserRemoteDataSource : IUserDataSource {
 
-    override fun login(context: Context, request: LoginRequest, listener: UserRepository.ILoginListener) {
-        val service = WebService.createService(context, IApi::class.java)
-        val call = service.login(request)
-        call.enqueue(
-                { response ->
-                    if (response.isSuccessful) {
-                        listener.onLoginSuccess(response.body())
-                    } else {
-                        listener.onLoginFailure()
-                    }
-                },
-                {
-                    listener.onNetworkError()
-                }
-        )
-    }
+    override fun login(context: Context, request: LoginRequest): LiveData<DataResource<LoginResponse>> = WebService.createService(context, IApi::class.java).login(request)
 
-    override fun register(context: Context, request: RegisterRequest, listener: UserRepository.IRegisterListener) {
-        val service = WebService.createService(context, IApi::class.java)
-        val call = service.register(request)
-        call.enqueue(
-                { response ->
-                    if (response.isSuccessful) {
-                        listener.onRegisterSuccess(response.body())
-                    } else {
-                        listener.onRegisterFailure()
-                    }
-                },
-                {
-                    listener.onNetworkError()
-                }
-        )
-    }
+    override fun register(context: Context, request: RegisterRequest): LiveData<DataResource<RegisterResponse>> = WebService.createService(context, IApi::class.java).register(request)
 
     override fun logout(context: Context) = throw UnsupportedOperationException()
 
-    override fun getUser(context: Context): LiveData<User?> = throw UnsupportedOperationException()
+    override fun getUser(context: Context): LiveData<DataResource<User>> = throw UnsupportedOperationException()
 
     override fun saveUser(context: Context, user: User) = throw UnsupportedOperationException()
 

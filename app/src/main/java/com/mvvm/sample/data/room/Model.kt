@@ -1,4 +1,4 @@
-package com.mvvm.sample.data
+package com.mvvm.sample.data.room
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey

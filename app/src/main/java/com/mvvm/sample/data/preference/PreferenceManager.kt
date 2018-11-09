@@ -1,4 +1,4 @@
-package com.mvvm.sample.storage
+package com.mvvm.sample.data.preference
 
 import android.content.Context
 import android.content.SharedPreferences

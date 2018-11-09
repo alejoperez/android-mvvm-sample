@@ -10,7 +10,8 @@ import android.view.MenuItem
 import android.widget.TextView
 import com.mvvm.sample.base.BaseActivity
 import com.mvvm.sample.R
-import com.mvvm.sample.data.User
+import com.mvvm.sample.data.room.User
+import com.mvvm.sample.livedata.DataResource
 import com.mvvm.sample.livedata.EventObserver
 import com.mvvm.sample.photos.PhotosFragment
 import com.mvvm.sample.places.PlacesFragment
@@ -22,7 +23,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private val viewModel by lazy { obtainViewModel(MainViewModel::class.java) }
 
     private val onLogoutSuccessObserver = EventObserver<Unit> { finishAffinity() }
-    private val userEventObserver = Observer<User?> { onUserSuccess(it) }
+    private val userEventObserver = Observer<DataResource<User>> {
+        if (it != null) {
+            onUserSuccess(it)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,16 +39,16 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun initViewModel() {
-        viewModel.userEvent.observe(this, userEventObserver)
+        viewModel.user.observe(this, userEventObserver)
         viewModel.onLogoutSuccess.observe(this, onLogoutSuccessObserver)
     }
 
-    private fun onUserSuccess(user: User?) {
+    private fun onUserSuccess(response: DataResource<User>) {
         val headerView = navView.getHeaderView(0)
         val textViewUserName = headerView.findViewById(R.id.tvUserName) as TextView
         val textViewUserEmail = headerView.findViewById(R.id.tvUserEmail) as TextView
-        textViewUserName.text = user?.name
-        textViewUserEmail.text = user?.email
+        textViewUserName.text = response.data?.name
+        textViewUserEmail.text = response.data?.email
     }
 
     private fun initView() {

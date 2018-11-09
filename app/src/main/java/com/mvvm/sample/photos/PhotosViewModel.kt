@@ -1,31 +1,24 @@
 package com.mvvm.sample.photos
 
 import android.app.Application
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.Transformations
 import com.mvvm.sample.base.BaseViewModel
-import com.mvvm.sample.data.Photo
+import com.mvvm.sample.data.room.Photo
 import com.mvvm.sample.data.photos.PhotosRepository
+import com.mvvm.sample.livedata.DataResource
 import com.mvvm.sample.livedata.Event
 
-class PhotosViewModel(application: Application): BaseViewModel(application), PhotosRepository.IPhotosListener {
+class PhotosViewModel(application: Application): BaseViewModel(application) {
 
-    val onPhotosSuccess = MutableLiveData<Event<List<Photo>?>>()
-    val onPhotosFailure = MutableLiveData<Event<Unit>>()
+    private val getPhotos = MutableLiveData<Event<Unit>>()
+    val photos: LiveData<DataResource<List<Photo>>> = Transformations.switchMap(getPhotos) {
+        PhotosRepository.getInstance().getPhotos(getApplication())
+    }
 
     fun getPhotos() {
-        PhotosRepository.getInstance().getPhotos(getApplication(), this)
-    }
-
-    override fun onPhotosSuccess(photos: List<Photo>?) {
-        onPhotosSuccess.value = Event(photos)
-    }
-
-    override fun onPhotosFailure() {
-        onPhotosFailure.value = Event(Unit)
-    }
-
-    override fun onNetworkError() {
-        onNetworkError.value = Event(Unit)
+        getPhotos.value = Event(Unit)
     }
 
 }

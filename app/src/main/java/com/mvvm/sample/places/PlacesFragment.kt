@@ -1,5 +1,6 @@
 package com.mvvm.sample.places
 
+import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
@@ -14,8 +15,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.mvvm.sample.R
 import com.mvvm.sample.base.BaseFragment
-import com.mvvm.sample.data.Place
-import com.mvvm.sample.livedata.EventObserver
+import com.mvvm.sample.data.room.Place
+import com.mvvm.sample.livedata.DataResource
+import com.mvvm.sample.livedata.Status
 import kotlinx.android.synthetic.main.fragment_places.*
 
 class PlacesFragment: BaseFragment(), OnMapReadyCallback {
@@ -28,11 +30,13 @@ class PlacesFragment: BaseFragment(), OnMapReadyCallback {
 
     private val viewModel by lazy { obtainViewModel(PlacesViewModel::class.java) }
 
-    private val onPlacesFailureObserver = EventObserver<Unit>{ onPlacesFailure() }
-
-    private val onPlacesSuccessObserver = EventObserver<List<Place>?> { onPlacesSuccess(it) }
-
-    private val onNetworkErrorObserver = EventObserver<Unit>{ onNetworkError() }
+    private val placesResponseObserver = Observer<DataResource<List<Place>>>{
+        if (it != null) {
+            onPlacesResponse(it)
+        } else {
+            onPlacesFailure()
+        }
+    }
 
     private lateinit var googleMap: GoogleMap
 
@@ -49,9 +53,7 @@ class PlacesFragment: BaseFragment(), OnMapReadyCallback {
     }
 
     private fun initViewModel() {
-        viewModel.onPlacesSuccess.observe(this,onPlacesSuccessObserver)
-        viewModel.onPlacesFailure.observe(this,onPlacesFailureObserver)
-        viewModel.onNetworkError.observe(this,onNetworkErrorObserver)
+        viewModel.places.observe(this,placesResponseObserver)
     }
 
     private fun initView() {
@@ -68,18 +70,22 @@ class PlacesFragment: BaseFragment(), OnMapReadyCallback {
         viewModel.getPlaces()
     }
 
-    private fun onPlacesSuccess(it: List<Place>?) {
-        currentPlaces = it
+    private fun onPlacesResponse(response: DataResource<List<Place>>) {
+        when(response.status) {
+            Status.SUCCESS -> onPlacesSuccess(response.data)
+            Status.FAILURE -> onPlacesFailure()
+            Status.NETWORK_ERROR -> onNetworkError()
+        }
+    }
+
+    private fun onPlacesSuccess(places: List<Place>?) {
+        currentPlaces = places
         loadPlacesInMap()
         randomPlace()
     }
 
     private fun onPlacesFailure() {
         showAlert(R.string.error_loading_places)
-    }
-
-    private fun onNetworkError() {
-        showAlert(R.string.error_network)
     }
 
     private fun loadPlacesInMap() {

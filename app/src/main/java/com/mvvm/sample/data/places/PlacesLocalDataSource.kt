@@ -1,10 +1,12 @@
 package com.mvvm.sample.data.places
 
+import android.arch.lifecycle.LiveData
 import android.content.Context
-import com.mvvm.sample.data.Place
-import com.mvvm.sample.data.SampleDataBase
+import com.mvvm.sample.data.room.Place
+import com.mvvm.sample.data.room.SampleDataBase
+import com.mvvm.sample.livedata.DataRequest
+import com.mvvm.sample.livedata.DataResource
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
 
 class PlacesLocalDataSource: IPlacesDataSource {
 
@@ -14,13 +16,9 @@ class PlacesLocalDataSource: IPlacesDataSource {
         }
     }
 
-    override fun getPlaces(context: Context, listener: PlacesRepository.IPlacesListener) {
-        doAsync {
-            val places = SampleDataBase.getInstance(context).placeDao().getPlaces()
-            uiThread { listener.onPlacesSuccess(places) }
-        }
+    override fun getPlaces(context: Context): LiveData<DataResource<List<Place>>> = object : DataRequest<List<Place>>() {
+        override fun dataRequestToObserve(): LiveData<List<Place>> = SampleDataBase.getInstance(context).placeDao().getPlaces()
 
-
-    }
+    }.performRequest()
 
 }

@@ -1,8 +1,10 @@
 package com.mvvm.sample.data.photos
 
+import android.arch.lifecycle.LiveData
 import android.content.Context
-import com.mvvm.sample.data.IBaseSourceListener
-import com.mvvm.sample.data.Photo
+import com.mvvm.sample.data.room.Photo
+import com.mvvm.sample.livedata.DataResource
+import com.mvvm.sample.livedata.NetworkRequest
 
 class PhotosRepository private constructor(
         private val localDataSource: IPhotosDataSource = PhotosLocalDataSource(),
@@ -20,26 +22,22 @@ class PhotosRepository private constructor(
         }
     }
 
-    override fun getPhotos(context: Context, listener: IPhotosListener) {
-        if (hasCache) {
-            localDataSource.getPhotos(context, listener)
+    override fun getPhotos(context: Context): LiveData<DataResource<List<Photo>>> {
+        return if (hasCache) {
+            localDataSource.getPhotos(context)
         } else {
-            remoteDataSource.getPhotos(context, object : IPhotosListener{
+            object : NetworkRequest<DataResource<List<Photo>>>() {
 
-                override fun onPhotosSuccess(photos: List<Photo>?) {
-                    if (photos != null) {
-                        savePhotos(context, photos)
-                        listener.onPhotosSuccess(photos)
+                override fun processBeforeDispatch(response: DataResource<List<Photo>>) {
+                    response.data?.let {
+                        savePhotos(context, it)
                         hasCache = true
-                    } else {
-                        listener.onPhotosFailure()
                     }
                 }
 
-                override fun onPhotosFailure() = listener.onPhotosFailure()
+                override fun networkRequestToObserve(): LiveData<DataResource<List<Photo>>> = remoteDataSource.getPhotos(context)
 
-                override fun onNetworkError() = listener.onNetworkError()
-            })
+            }.performRequest()
         }
     }
 
@@ -49,11 +47,5 @@ class PhotosRepository private constructor(
 
     fun invalidateCache() {
         hasCache = false
-    }
-
-
-    interface IPhotosListener : IBaseSourceListener {
-        fun onPhotosSuccess(photos: List<Photo>?)
-        fun onPhotosFailure()
     }
 }

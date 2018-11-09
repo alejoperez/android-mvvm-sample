@@ -1,16 +1,19 @@
-package com.mvvm.sample.data
+package com.mvvm.sample.data.room
 
 import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.OnConflictStrategy
 import android.arch.persistence.room.Query
+import com.mvvm.sample.data.room.Photo
+import com.mvvm.sample.data.room.Place
+import com.mvvm.sample.data.room.User
 
 @Dao
 interface UserDao {
 
     @Query("SELECT * from user LIMIT 1")
-    fun getUser(): LiveData<User?>
+    fun getUser(): LiveData<User>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveUser(user: User)
@@ -21,7 +24,7 @@ interface UserDao {
 interface PlaceDao {
 
     @Query("SELECT * from place")
-    fun getPlaces(): List<Place>
+    fun getPlaces(): LiveData<List<Place>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun savePlaces(places: List<Place>)
@@ -32,7 +35,7 @@ interface PlaceDao {
 interface PhotoDao {
 
     @Query("SELECT * from photo")
-    fun getPhotos(): List<Photo>
+    fun getPhotos(): LiveData<List<Photo>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun savePhotos(photos: List<Photo>)

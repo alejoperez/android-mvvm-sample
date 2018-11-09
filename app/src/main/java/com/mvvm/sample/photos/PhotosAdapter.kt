@@ -2,7 +2,7 @@ package com.mvvm.sample.photos
 
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
-import com.mvvm.sample.data.Photo
+import com.mvvm.sample.data.room.Photo
 
 class PhotosAdapter(private val photoList: List<Photo>?, val listener: PhotoItemView.OnPhotoClickListener) : RecyclerView.Adapter<PhotosAdapter.ViewHolder>() {
 

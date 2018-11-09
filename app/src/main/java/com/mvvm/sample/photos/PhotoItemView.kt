@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import android.view.View
 import com.bumptech.glide.Glide
 import com.mvvm.sample.R
-import com.mvvm.sample.data.Photo
+import com.mvvm.sample.data.room.Photo
 import kotlinx.android.synthetic.main.item_photo.view.*
 import android.support.constraint.ConstraintLayout
 

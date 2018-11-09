@@ -2,7 +2,8 @@ package com.mvvm.sample.webservice
 
 import android.content.Context
 import com.mvvm.sample.BuildConfig
-import com.mvvm.sample.storage.PreferenceManager
+import com.mvvm.sample.livedata.LiveDataCallAdapterFactory
+import com.mvvm.sample.data.preference.PreferenceManager
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -25,6 +26,7 @@ object WebService {
     private val builder: Retrofit.Builder = Retrofit.Builder()
             .baseUrl(BuildConfig.SERVER_URL)
             .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(LiveDataCallAdapterFactory.create())
 
     fun <S> createService(context: Context, serviceClass: Class<S>, authType: AuthenticationType = AuthenticationType.NONE): S {
 

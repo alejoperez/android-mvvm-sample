@@ -1,8 +1,10 @@
 package com.mvvm.sample.data.places
 
+import android.arch.lifecycle.LiveData
 import android.content.Context
-import com.mvvm.sample.data.IBaseSourceListener
-import com.mvvm.sample.data.Place
+import com.mvvm.sample.data.room.Place
+import com.mvvm.sample.livedata.DataResource
+import com.mvvm.sample.livedata.NetworkRequest
 
 class PlacesRepository private constructor(
         private val localDataSource: IPlacesDataSource = PlacesLocalDataSource(),
@@ -20,26 +22,21 @@ class PlacesRepository private constructor(
         }
     }
 
-    override fun getPlaces(context: Context, listener: IPlacesListener) {
-        if (hasCache) {
-            localDataSource.getPlaces(context, listener)
+    override fun getPlaces(context: Context): LiveData<DataResource<List<Place>>> {
+        return if (hasCache) {
+            localDataSource.getPlaces(context)
         } else {
-            remoteDataSource.getPlaces(context, object : IPlacesListener{
-
-                override fun onPlacesSuccess(places: List<Place>?) {
-                    if (places != null) {
-                        savePlaces(context, places)
-                        listener.onPlacesSuccess(places)
+            object : NetworkRequest<DataResource<List<Place>>>() {
+                override fun processBeforeDispatch(response: DataResource<List<Place>>) {
+                    response.data?.let {
+                        savePlaces(context, it)
                         hasCache = true
-                    } else {
-                        listener.onPlacesFailure()
                     }
                 }
 
-                override fun onPlacesFailure() = listener.onPlacesFailure()
+                override fun networkRequestToObserve(): LiveData<DataResource<List<Place>>> = remoteDataSource.getPlaces(context)
 
-                override fun onNetworkError() = listener.onNetworkError()
-            })
+            }.performRequest()
         }
     }
 
@@ -49,11 +46,5 @@ class PlacesRepository private constructor(
 
     fun invalidateCache() {
         hasCache = false
-    }
-
-
-    interface IPlacesListener : IBaseSourceListener {
-        fun onPlacesSuccess(places: List<Place>?)
-        fun onPlacesFailure()
     }
 }

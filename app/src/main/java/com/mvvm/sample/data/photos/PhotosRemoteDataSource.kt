@@ -1,8 +1,9 @@
 package com.mvvm.sample.data.photos
 
+import android.arch.lifecycle.LiveData
 import android.content.Context
-import com.mvvm.sample.data.Photo
-import com.mvvm.sample.extensions.enqueue
+import com.mvvm.sample.data.room.Photo
+import com.mvvm.sample.livedata.DataResource
 import com.mvvm.sample.webservice.IApi
 import com.mvvm.sample.webservice.WebService
 import java.lang.UnsupportedOperationException
@@ -11,22 +12,6 @@ class PhotosRemoteDataSource : IPhotosDataSource {
 
     override fun savePhotos(context: Context, photos: List<Photo>) = throw UnsupportedOperationException()
 
-    override fun getPhotos(context: Context, listener: PhotosRepository.IPhotosListener) {
-        val service = WebService.createService(context, IApi::class.java)
-        val call = service.getPhotos()
-        call.enqueue(
-                { response ->
-                    if (response.isSuccessful) {
-                        listener.onPhotosSuccess(response.body())
-
-                    } else {
-                        listener.onPhotosFailure()
-                    }
-                },
-                {
-                    listener.onNetworkError()
-                }
-        )
-    }
+    override fun getPhotos(context: Context): LiveData<DataResource<List<Photo>>> = WebService.createService(context, IApi::class.java).getPhotos()
 
 }

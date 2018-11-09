@@ -1,4 +1,4 @@
-package com.mvvm.sample.data
+package com.mvvm.sample.data.room
 
 import android.arch.persistence.room.Database
 import android.arch.persistence.room.Room
@@ -18,8 +18,10 @@ abstract class SampleDataBase: RoomDatabase() {
 
         private const val DATABASE_NAME = "sample_database"
 
-        fun getInstance(context: Context): SampleDataBase = INSTANCE ?: synchronized(this) {
-            INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
+        fun getInstance(context: Context): SampleDataBase = INSTANCE
+                ?: synchronized(this) {
+            INSTANCE
+                    ?: buildDatabase(context).also { INSTANCE = it }
         }
 
         private fun buildDatabase(context: Context) = Room.databaseBuilder(context, SampleDataBase::class.java, DATABASE_NAME).fallbackToDestructiveMigration().build()

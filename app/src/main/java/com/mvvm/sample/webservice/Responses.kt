@@ -1,6 +1,6 @@
 package com.mvvm.sample.webservice
 
-import com.mvvm.sample.data.User
+import com.mvvm.sample.data.room.User
 
 
 class RegisterResponse(val id: Long,
@@ -8,7 +8,7 @@ class RegisterResponse(val id: Long,
                        val email: String,
                        val accessToken: String) {
 
-    fun toUser(): User = User(id,name,email)
+    fun toUser(): User = User(id, name, email)
 }
 
 class LoginResponse(val success: Boolean,
@@ -17,5 +17,5 @@ class LoginResponse(val success: Boolean,
                     val email: String,
                     val accessToken: String) {
 
-    fun toUser(): User = User(id,name,email)
+    fun toUser(): User = User(id, name, email)
 }

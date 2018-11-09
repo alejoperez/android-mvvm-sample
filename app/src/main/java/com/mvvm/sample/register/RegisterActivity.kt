@@ -1,13 +1,16 @@
 package com.mvvm.sample.register
 
+import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.view.View
 import com.mvvm.sample.R
 import com.mvvm.sample.base.BaseActivity
 import com.mvvm.sample.extensions.getWhiteSpaceFilters
-import com.mvvm.sample.livedata.EventObserver
+import com.mvvm.sample.livedata.DataResource
+import com.mvvm.sample.livedata.Status
 import com.mvvm.sample.login.LoginActivity
 import com.mvvm.sample.main.MainActivity
+import com.mvvm.sample.webservice.RegisterResponse
 import kotlinx.android.synthetic.main.activity_register.*
 import org.jetbrains.anko.startActivity
 
@@ -15,11 +18,13 @@ class RegisterActivity : BaseActivity() {
 
     private val viewModel by lazy { obtainViewModel(RegisterViewModel::class.java) }
 
-    private val onRegisterSuccessObserver = EventObserver<Unit> { onRegisterSuccess() }
-
-    private val onRegisterFailureObserver = EventObserver<Unit> { onRegisterFailure() }
-
-    private val onNetworkErrorObserver = EventObserver<Unit> { onNetworkError() }
+    private val onRegisterResponseObserver = Observer<DataResource<RegisterResponse>> {
+        if(it != null) {
+            onRegisterResponse(it)
+        } else {
+            onRegisterFailure()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,9 +34,7 @@ class RegisterActivity : BaseActivity() {
     }
 
     private fun initViewModel() {
-        viewModel.onRegisterSuccess.observe(this, onRegisterSuccessObserver)
-        viewModel.onRegisterFailure.observe(this, onRegisterFailureObserver)
-        viewModel.onNetworkError.observe(this, onNetworkErrorObserver)
+        viewModel.registerResponse.observe(this, onRegisterResponseObserver)
     }
 
     private fun initView() {
@@ -47,20 +50,22 @@ class RegisterActivity : BaseActivity() {
         }
     }
 
-    private fun onRegisterSuccess() {
+    private fun onRegisterResponse(response: DataResource<RegisterResponse>) {
         hideProgress()
+        when(response.status) {
+            Status.SUCCESS -> onRegisterSuccess()
+            Status.FAILURE -> onRegisterFailure()
+            Status.NETWORK_ERROR -> onNetworkError()
+        }
+    }
+
+    private fun onRegisterSuccess() {
         startActivity<MainActivity>()
         finishAffinity()
     }
 
     private fun onRegisterFailure() {
-        hideProgress()
         showAlert(R.string.error_user_already_exists)
-    }
-
-    private fun onNetworkError() {
-        hideProgress()
-        showAlert(R.string.error_network)
     }
 
     private fun getName(): String = etName.text.toString()

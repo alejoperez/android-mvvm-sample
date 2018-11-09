@@ -1,12 +1,15 @@
 package com.mvvm.sample.login
 
+import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.view.View
 import com.mvvm.sample.R
 import com.mvvm.sample.base.BaseActivity
 import com.mvvm.sample.extensions.getWhiteSpaceFilters
-import com.mvvm.sample.livedata.EventObserver
+import com.mvvm.sample.livedata.DataResource
+import com.mvvm.sample.livedata.Status
 import com.mvvm.sample.main.MainActivity
+import com.mvvm.sample.webservice.LoginResponse
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.startActivity
 
@@ -14,17 +17,19 @@ class LoginActivity : BaseActivity() {
 
     private val viewModel by lazy { obtainViewModel(LoginViewModel::class.java) }
 
-    private val onLoginSuccessObserver = EventObserver<Unit> { onLoginSuccess() }
-
-    private val onLoginFailureObserver = EventObserver<Unit> { onLoginFailure() }
-
-    private val onNetworkErrorObserver = EventObserver<Unit> { onNetworkError() }
+    private val onLoginResponseObserver = Observer<DataResource<LoginResponse>> {
+        if (it != null) {
+            onLoginResponse(it)
+        } else {
+            onLoginFailure()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        initView()
         initViewModel()
+        initView()
     }
 
     private fun initView() {
@@ -37,9 +42,7 @@ class LoginActivity : BaseActivity() {
     }
 
     private fun initViewModel() {
-        viewModel.onLoginSuccess.observe(this, onLoginSuccessObserver)
-        viewModel.onLoginFailure.observe(this, onLoginFailureObserver)
-        viewModel.onNetworkError.observe(this, onNetworkErrorObserver)
+        viewModel.loginResponse.observe(this, onLoginResponseObserver)
     }
 
     private fun onLoginClicked() {
@@ -60,20 +63,23 @@ class LoginActivity : BaseActivity() {
 
     private fun getPassword(): String = etPassword.text.toString()
 
-    private fun onLoginSuccess() {
+
+    private fun onLoginResponse(response: DataResource<LoginResponse>) {
         hideProgress()
+        when (response.status) {
+            Status.SUCCESS -> onLoginSuccess()
+            Status.FAILURE -> onLoginFailure()
+            Status.NETWORK_ERROR -> onNetworkError()
+        }
+    }
+
+    private fun onLoginSuccess() {
         startActivity<MainActivity>()
         finishAffinity()
     }
 
     private fun onLoginFailure() {
-        hideProgress()
         showAlert(R.string.error_invalid_credentials)
-    }
-
-    private fun onNetworkError() {
-        hideProgress()
-        showAlert(R.string.error_network)
     }
 
     private fun showProgress() {

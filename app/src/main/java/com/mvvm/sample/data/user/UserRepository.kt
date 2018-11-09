@@ -1,9 +1,11 @@
 package com.mvvm.sample.data.user
 
+import android.arch.lifecycle.LiveData
 import android.content.Context
-import com.mvvm.sample.data.IBaseSourceListener
-import com.mvvm.sample.data.User
-import com.mvvm.sample.storage.PreferenceManager
+import com.mvvm.sample.data.room.User
+import com.mvvm.sample.livedata.DataResource
+import com.mvvm.sample.livedata.NetworkRequest
+import com.mvvm.sample.data.preference.PreferenceManager
 import com.mvvm.sample.webservice.LoginRequest
 import com.mvvm.sample.webservice.LoginResponse
 import com.mvvm.sample.webservice.RegisterRequest
@@ -26,50 +28,34 @@ class UserRepository private constructor(
 
     override fun getUser(context: Context) = localDataSource.getUser(context)
 
-    override fun login(context: Context, request: LoginRequest, listener: ILoginListener) {
-        remoteDataSource.login(context, request, object : ILoginListener {
-            override fun onLoginSuccess(response: LoginResponse?) {
-                response?.let {
-                    PreferenceManager<String>(context).putPreference(PreferenceManager.ACCESS_TOKEN,response.accessToken)
-                    localDataSource.saveUser(context, response.toUser())
-                    listener.onLoginSuccess(response)
-                }
+    override fun login(context: Context, request: LoginRequest): LiveData<DataResource<LoginResponse>> = object  : NetworkRequest<DataResource<LoginResponse>>() {
+
+        override fun processBeforeDispatch(response: DataResource<LoginResponse>) {
+            response.data?.let {
+                PreferenceManager<String>(context).putPreference(PreferenceManager.ACCESS_TOKEN,it.accessToken)
+                localDataSource.saveUser(context, it.toUser())
             }
+        }
 
-            override fun onLoginFailure() = listener.onLoginFailure()
+        override fun networkRequestToObserve(): LiveData<DataResource<LoginResponse>> = remoteDataSource.login(context, request)
 
-            override fun onNetworkError() = listener.onNetworkError()
-        })
-    }
+    }.performRequest()
 
-    override fun register(context: Context, request: RegisterRequest, listener: IRegisterListener) {
-        remoteDataSource.register(context, request, object : IRegisterListener {
-            override fun onRegisterSuccess(response: RegisterResponse?) {
-                response?.let {
-                    PreferenceManager<String>(context).putPreference(PreferenceManager.ACCESS_TOKEN, response.accessToken)
-                    localDataSource.saveUser(context, response.toUser())
-                    listener.onRegisterSuccess(response)
-                }
+    override fun register(context: Context, request: RegisterRequest): LiveData<DataResource<RegisterResponse>> = object : NetworkRequest<DataResource<RegisterResponse>>(){
+
+        override fun processBeforeDispatch(response: DataResource<RegisterResponse>) {
+            response.data?.let {
+                PreferenceManager<String>(context).putPreference(PreferenceManager.ACCESS_TOKEN, it.accessToken)
+                localDataSource.saveUser(context, it.toUser())
             }
+        }
 
-            override fun onRegisterFailure() = listener.onRegisterFailure()
+            override fun networkRequestToObserve(): LiveData<DataResource<RegisterResponse>> = remoteDataSource.register(context, request)
 
-            override fun onNetworkError() = listener.onNetworkError()
-        })
-    }
+        }.performRequest()
 
     override fun isLoggedIn(context: Context): Boolean = localDataSource.isLoggedIn(context)
 
     override fun logout(context: Context) = localDataSource.logout(context)
-
-    interface IRegisterListener : IBaseSourceListener {
-        fun onRegisterSuccess(response: RegisterResponse?)
-        fun onRegisterFailure()
-    }
-
-    interface ILoginListener : IBaseSourceListener {
-        fun onLoginSuccess(response: LoginResponse?)
-        fun onLoginFailure()
-    }
 
 }
