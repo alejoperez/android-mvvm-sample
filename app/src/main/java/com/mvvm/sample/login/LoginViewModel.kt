@@ -4,30 +4,52 @@ import android.app.Application
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
+import android.databinding.ObservableBoolean
+import android.databinding.ObservableField
+import android.databinding.ObservableInt
+import com.mvvm.sample.R
 import com.mvvm.sample.base.BaseViewModel
 import com.mvvm.sample.data.user.UserRepository
+import com.mvvm.sample.databinding.BindingAdapters
 import com.mvvm.sample.livedata.DataResource
 import com.mvvm.sample.livedata.Event
+import com.mvvm.sample.utils.checkField
+import com.mvvm.sample.utils.getValueOrDefault
 import com.mvvm.sample.webservice.LoginRequest
 import com.mvvm.sample.webservice.LoginResponse
 
 class LoginViewModel(application: Application): BaseViewModel(application) {
 
-    private val loginEvent = MutableLiveData<Event<Pair<String,String>>>()
-    val loginResponse: LiveData<DataResource<LoginResponse>> = Transformations.switchMap(loginEvent) { it ->
-        val pair = it.getContentIfNotHandled()
-        pair?.let {
-            UserRepository.getInstance().login(getApplication(), LoginRequest(it.first, it.second))
+    val email = ObservableField("")
+    val password = ObservableField("")
+
+    val emailError = ObservableInt(BindingAdapters.EMPTY)
+    val passwordError = ObservableInt(BindingAdapters.EMPTY)
+
+    val isLoading = ObservableBoolean(false)
+
+    private val loginEvent = MutableLiveData<Event<Unit>>()
+    val loginResponse: LiveData<DataResource<LoginResponse>> = Transformations.switchMap(loginEvent) {
+        UserRepository.getInstance().login(getApplication(), LoginRequest(email.getValueOrDefault(), password.getValueOrDefault()))
+    }
+
+    private fun isValidEmail(): Boolean = email.getValueOrDefault().isNotEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(email.getValueOrDefault()).matches()
+
+    private fun isValidPassword(): Boolean = password.getValueOrDefault().isNotEmpty()
+
+    private fun isValidForm(): Boolean = isValidEmail() && isValidPassword()
+
+    fun login() {
+        if (isValidForm()) {
+            showProgress()
+            loginEvent.value = Event(Unit)
+        } else {
+            emailError.checkField(R.string.error_invalid_email,isValidEmail())
+            passwordError.checkField(R.string.error_empty_password,isValidPassword())
         }
     }
 
-    fun isValidEmail(email: String): Boolean = email.isNotEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    private fun showProgress() = isLoading.set(true)
 
-    fun isValidPassword(password: String): Boolean = password.isNotEmpty()
-
-    fun isValidForm(email: String, password: String): Boolean = isValidEmail(email) && isValidPassword(password)
-
-    fun login(email: String, password: String) {
-        loginEvent.value = Event(email to password)
-    }
+    fun hideProgress() = isLoading.set(false)
 }

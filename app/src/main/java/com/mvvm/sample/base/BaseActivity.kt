@@ -2,6 +2,9 @@ package com.mvvm.sample.base
 
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
+import android.databinding.DataBindingUtil
+import android.databinding.ViewDataBinding
+import android.os.Bundle
 import android.support.annotation.IdRes
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
@@ -10,7 +13,29 @@ import kotlinx.android.synthetic.main.toolbar.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.yesButton
 
-abstract class BaseActivity : AppCompatActivity(), IBaseView {
+abstract class BaseActivity<VM: BaseViewModel,DB: ViewDataBinding> : AppCompatActivity(), IBaseView {
+
+    protected lateinit var  viewModel: VM
+    protected lateinit var dataBinding: DB
+
+    abstract fun getLayoutId(): Int
+    abstract fun getViewModelClass(): Class<VM>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(getLayoutId())
+        initViewModel()
+        initView()
+    }
+
+    open fun initViewModel() {
+        viewModel = obtainViewModel(getViewModelClass())
+    }
+
+    open fun initView() {
+        dataBinding = DataBindingUtil.setContentView(this, getLayoutId())
+        dataBinding.setLifecycleOwner(this)
+    }
 
     fun setToolbarTitle(textInt: Int) = toolbar?.setTitle(textInt)
 

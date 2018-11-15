@@ -4,8 +4,14 @@ import android.app.Application
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
+import android.databinding.ObservableField
+import android.databinding.ObservableInt
+import com.mvvm.sample.R
 import com.mvvm.sample.base.BaseViewModel
 import com.mvvm.sample.data.user.UserRepository
+import com.mvvm.sample.databinding.BindingAdapters
+import com.mvvm.sample.utils.checkField
+import com.mvvm.sample.utils.getValueOrDefault
 import com.mvvm.sample.livedata.DataResource
 import com.mvvm.sample.livedata.Event
 import com.mvvm.sample.webservice.RegisterRequest
@@ -13,27 +19,42 @@ import com.mvvm.sample.webservice.RegisterResponse
 
 class RegisterViewModel(application: Application): BaseViewModel(application) {
 
-    private val registerEvent = MutableLiveData<Event<List<String>>>()
+    val name = ObservableField("")
+    val email = ObservableField("")
+    val password = ObservableField("")
 
-    val registerResponse: LiveData<DataResource<RegisterResponse>> = Transformations.switchMap(registerEvent) { it ->
-        val list = it?.getContentIfNotHandled()
-        list?.let {
-            val name = list[0]
-            val email = list[1]
-            val password = list[2]
-            UserRepository.getInstance().register(getApplication(), RegisterRequest(name, email, password))
+    val errorName = ObservableInt(BindingAdapters.EMPTY)
+    val errorEmail = ObservableInt(BindingAdapters.EMPTY)
+    val errorPassword = ObservableInt(BindingAdapters.EMPTY)
+
+    val isLoading = ObservableField(false)
+
+    private val registerEvent = MutableLiveData<Event<Unit>>()
+
+    val registerResponse: LiveData<DataResource<RegisterResponse>> = Transformations.switchMap(registerEvent) {
+        UserRepository.getInstance().register(getApplication(), RegisterRequest(name.getValueOrDefault(), email.getValueOrDefault(), password.getValueOrDefault()))
+    }
+
+    fun register() {
+        if (isValidForm()) {
+            showProgress()
+            registerEvent.value = Event(Unit)
+        } else {
+            errorName.checkField(R.string.error_name_empty,isValidName())
+            errorEmail.checkField(R.string.error_invalid_email,isValidEmail())
+            errorPassword.checkField(R.string.error_empty_password,isValidPassword())
         }
     }
 
-    fun isValidName(name: String): Boolean = name.isNotEmpty()
+    private fun isValidName(): Boolean = name.getValueOrDefault().isNotEmpty()
 
-    fun isValidEmail(email: String): Boolean = email.isNotEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    private fun isValidEmail(): Boolean = email.getValueOrDefault().isNotEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(email.getValueOrDefault()).matches()
 
-    fun isValidPassword(password: String): Boolean = password.isNotEmpty()
+    private fun isValidPassword(): Boolean = password.getValueOrDefault().isNotEmpty()
 
-    fun isValidForm(name: String, email: String, password: String): Boolean = isValidName(name) && isValidEmail(email) && isValidPassword(password)
+    private fun isValidForm(): Boolean = isValidName() && isValidEmail() && isValidPassword()
 
-    fun register(name: String, email: String, password: String) {
-        registerEvent.value = Event(arrayListOf(name,email,password))
-    }
+    private fun showProgress() = isLoading.set(true)
+
+    fun hideProgress() = isLoading.set(false)
 }

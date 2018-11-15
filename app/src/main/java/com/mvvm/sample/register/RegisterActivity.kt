@@ -1,24 +1,38 @@
 package com.mvvm.sample.register
 
 import android.arch.lifecycle.Observer
-import android.os.Bundle
-import android.view.View
 import com.mvvm.sample.R
 import com.mvvm.sample.base.BaseActivity
-import com.mvvm.sample.extensions.getWhiteSpaceFilters
+import com.mvvm.sample.databinding.ActivityRegisterBinding
 import com.mvvm.sample.livedata.DataResource
 import com.mvvm.sample.livedata.Status
 import com.mvvm.sample.login.LoginActivity
 import com.mvvm.sample.main.MainActivity
+import com.mvvm.sample.utils.EditTextUtils
 import com.mvvm.sample.webservice.RegisterResponse
-import kotlinx.android.synthetic.main.activity_register.*
 import org.jetbrains.anko.startActivity
 
-class RegisterActivity : BaseActivity() {
+class RegisterActivity : BaseActivity<RegisterViewModel,ActivityRegisterBinding>() {
 
-    private val viewModel by lazy { obtainViewModel(RegisterViewModel::class.java) }
+    override fun getLayoutId() = R.layout.activity_register
+
+    override fun getViewModelClass(): Class<RegisterViewModel> = RegisterViewModel::class.java
+
+    override fun initViewModel() {
+        super.initViewModel()
+        viewModel.registerResponse.observe(this, onRegisterResponseObserver)
+    }
+
+    override fun initView() {
+        super.initView()
+        dataBinding.viewModel = viewModel
+        dataBinding.etUtils = EditTextUtils
+        dataBinding.btRegister.setOnClickListener { viewModel.register() }
+        dataBinding.tvGoToLogin.setOnClickListener { startActivity<LoginActivity>() }
+    }
 
     private val onRegisterResponseObserver = Observer<DataResource<RegisterResponse>> {
+        viewModel.hideProgress()
         if(it != null) {
             onRegisterResponse(it)
         } else {
@@ -26,32 +40,7 @@ class RegisterActivity : BaseActivity() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
-        initViewModel()
-        initView()
-    }
-
-    private fun initViewModel() {
-        viewModel.registerResponse.observe(this, onRegisterResponseObserver)
-    }
-
-    private fun initView() {
-        etEmail.filters = getWhiteSpaceFilters()
-        etPassword.filters = getWhiteSpaceFilters()
-
-        btRegister.setOnClickListener {
-            onRegisterClicked()
-        }
-
-        tvGoToLogin.setOnClickListener {
-            startActivity<LoginActivity>()
-        }
-    }
-
     private fun onRegisterResponse(response: DataResource<RegisterResponse>) {
-        hideProgress()
         when(response.status) {
             Status.SUCCESS -> onRegisterSuccess()
             Status.FAILURE -> onRegisterFailure()
@@ -64,42 +53,6 @@ class RegisterActivity : BaseActivity() {
         finishAffinity()
     }
 
-    private fun onRegisterFailure() {
-        showAlert(R.string.error_user_already_exists)
-    }
-
-    private fun getName(): String = etName.text.toString()
-
-    private fun getEmail(): String = etEmail.text.toString()
-
-    private fun getPassword(): String = etPassword.text.toString()
-
-
-    private fun onRegisterClicked() {
-        if (viewModel.isValidForm(getName(), getEmail(), getPassword())) {
-            showProgress()
-            viewModel.register(getName(), getEmail(), getPassword())
-        } else {
-            if (!viewModel.isValidName(getName())) {
-                etName.error = getString(R.string.error_name_empty)
-            }
-            if (!viewModel.isValidEmail(getEmail())) {
-                etEmail.error = getString(R.string.error_invalid_email)
-            }
-            if (!viewModel.isValidPassword(getPassword())) {
-                etPassword.error = getString(R.string.error_empty_password)
-            }
-        }
-    }
-
-    private fun showProgress() {
-        btRegister.visibility = View.INVISIBLE
-        progress.visibility = View.VISIBLE
-    }
-
-    private fun hideProgress() {
-        btRegister.visibility = View.VISIBLE
-        progress.visibility = View.INVISIBLE
-    }
+    private fun onRegisterFailure() = showAlert(R.string.error_user_already_exists)
 
 }
