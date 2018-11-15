@@ -7,7 +7,6 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.TextView
 import com.mvvm.sample.base.BaseActivity
 import com.mvvm.sample.R
 import com.mvvm.sample.data.room.User
@@ -16,7 +15,6 @@ import com.mvvm.sample.livedata.DataResource
 import com.mvvm.sample.livedata.EventObserver
 import com.mvvm.sample.photos.PhotosFragment
 import com.mvvm.sample.places.PlacesFragment
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar.*
 
 class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), NavigationView.OnNavigationItemSelectedListener {
@@ -33,16 +31,17 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), Navigat
 
     override fun initView() {
         super.initView()
-        dataBinding.viewModel = viewModel
-        val toggle = ActionBarDrawerToggle(
-                this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        drawer_layout.addDrawerListener(toggle)
+        initNavMenu()
+        viewModel.getUser()
+    }
+
+    private fun initNavMenu() {
+        val toggle = ActionBarDrawerToggle(this, dataBinding.drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        dataBinding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        navView.setNavigationItemSelectedListener(this)
-        navView.menu.getItem(0).isChecked = true
-
-        viewModel.getUser()
+        dataBinding.navView.setNavigationItemSelectedListener(this)
+        dataBinding.navView.menu.getItem(0).isChecked = true
     }
 
     override fun initViewModel() {
@@ -59,16 +58,12 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), Navigat
     }
 
     private fun onUserSuccess(response: DataResource<User>) {
-        val headerView = navView.getHeaderView(0)
-        val textViewUserName = headerView.findViewById(R.id.tvUserName) as TextView
-        val textViewUserEmail = headerView.findViewById(R.id.tvUserEmail) as TextView
-        textViewUserName.text = response.data?.name
-        textViewUserEmail.text = response.data?.email
+        dataBinding.user = response.data
     }
 
     override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
-            drawer_layout.closeDrawer(GravityCompat.START)
+        if (dataBinding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            dataBinding.drawerLayout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
         }
@@ -92,7 +87,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), Navigat
             }
         }
 
-        drawer_layout.closeDrawer(GravityCompat.START)
+        dataBinding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
 }
