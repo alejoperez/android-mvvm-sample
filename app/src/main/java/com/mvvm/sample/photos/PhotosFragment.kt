@@ -1,7 +1,6 @@
 package com.mvvm.sample.photos
 
 import android.arch.lifecycle.Observer
-import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -9,19 +8,32 @@ import android.view.ViewGroup
 import com.mvvm.sample.R
 import com.mvvm.sample.base.BaseFragment
 import com.mvvm.sample.data.room.Photo
+import com.mvvm.sample.databinding.FragmentPhotosBinding
 import com.mvvm.sample.livedata.DataResource
 import com.mvvm.sample.livedata.Status
 import com.mvvm.sample.view.SimpleDividerItemDecorator
-import kotlinx.android.synthetic.main.fragment_photos.*
 
-class PhotosFragment : BaseFragment(), PhotoItemView.OnPhotoClickListener {
+class PhotosFragment : BaseFragment<PhotosViewModel,FragmentPhotosBinding>(), PhotoItemView.OnPhotoClickListener {
 
     companion object {
         const val TAG = "PhotosFragment"
         fun newInstance() = PhotosFragment()
     }
 
-    private val viewModel by lazy { obtainViewModel(PhotosViewModel::class.java) }
+    override fun getLayoutId(): Int = R.layout.fragment_photos
+
+    override fun getViewModelClass(): Class<PhotosViewModel> = PhotosViewModel::class.java
+
+    override fun initViewModel() {
+        super.initViewModel()
+        viewModel.photos.observe(this, onPhotosResponseObserver)
+    }
+
+    override fun initView(inflater: LayoutInflater, container: ViewGroup?) {
+        super.initView(inflater, container)
+        viewModel.getPhotos()
+        showProgress()
+    }
 
     private val onPhotosResponseObserver = Observer<DataResource<List<Photo>>> {
         if (it != null) {
@@ -29,25 +41,6 @@ class PhotosFragment : BaseFragment(), PhotoItemView.OnPhotoClickListener {
         } else {
             onPhotosFailure()
         }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_photos, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initViewModel()
-        getPhotos()
-    }
-
-    private fun initViewModel() {
-        viewModel.photos.observe(this, onPhotosResponseObserver)
-    }
-
-    private fun getPhotos() {
-        viewModel.getPhotos()
-        showProgress()
     }
 
     private fun onPhotosResponse(response: DataResource<List<Photo>>) {
@@ -60,7 +53,7 @@ class PhotosFragment : BaseFragment(), PhotoItemView.OnPhotoClickListener {
     }
 
     private fun onPhotosSuccess(photos: List<Photo>?) {
-        rvPhotos.apply {
+        dataBinding.rvPhotos.apply {
             layoutManager = LinearLayoutManager(getViewContext())
             setHasFixedSize(true)
             addItemDecoration(SimpleDividerItemDecorator(getViewContext()))
@@ -77,13 +70,13 @@ class PhotosFragment : BaseFragment(), PhotoItemView.OnPhotoClickListener {
     }
 
     private fun showProgress() {
-        rvPhotos.visibility = View.INVISIBLE
-        progress.visibility = View.VISIBLE
+        dataBinding.rvPhotos.visibility = View.INVISIBLE
+        dataBinding.progress.visibility = View.VISIBLE
     }
 
     private fun hideProgress() {
-        rvPhotos.visibility = View.VISIBLE
-        progress.visibility = View.INVISIBLE
+        dataBinding.rvPhotos.visibility = View.VISIBLE
+        dataBinding.progress.visibility = View.INVISIBLE
     }
 
 }

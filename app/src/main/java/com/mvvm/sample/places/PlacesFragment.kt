@@ -1,10 +1,8 @@
 package com.mvvm.sample.places
 
 import android.arch.lifecycle.Observer
-import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -16,11 +14,11 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.mvvm.sample.R
 import com.mvvm.sample.base.BaseFragment
 import com.mvvm.sample.data.room.Place
+import com.mvvm.sample.databinding.FragmentPlacesBinding
 import com.mvvm.sample.livedata.DataResource
 import com.mvvm.sample.livedata.Status
-import kotlinx.android.synthetic.main.fragment_places.*
 
-class PlacesFragment: BaseFragment(), OnMapReadyCallback {
+class PlacesFragment: BaseFragment<PlacesViewModel,FragmentPlacesBinding>(), OnMapReadyCallback {
 
     companion object {
         private const val ZOOM = 4f
@@ -28,40 +26,34 @@ class PlacesFragment: BaseFragment(), OnMapReadyCallback {
         fun newInstance() = PlacesFragment()
     }
 
-    private val viewModel by lazy { obtainViewModel(PlacesViewModel::class.java) }
+    private lateinit var googleMap: GoogleMap
+
+    private var currentPlaces: List<Place>? = emptyList()
+
+    override fun getLayoutId(): Int = R.layout.fragment_places
+
+    override fun getViewModelClass(): Class<PlacesViewModel> = PlacesViewModel::class.java
+
+    override fun initViewModel() {
+        super.initViewModel()
+        viewModel.places.observe(this,placesResponseObserver)
+    }
+
+    override fun initView(inflater: LayoutInflater, container: ViewGroup?) {
+        super.initView(inflater, container)
+        val mapFragment = childFragmentManager.findFragmentById(R.id.fragmentMapPlaces) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+        dataBinding.placesFabRandom.setOnClickListener { fabView ->
+            randomPlace()
+            Snackbar.make(fabView, R.string.places_random_message, Snackbar.LENGTH_LONG).show()
+        }
+    }
 
     private val placesResponseObserver = Observer<DataResource<List<Place>>>{
         if (it != null) {
             onPlacesResponse(it)
         } else {
             onPlacesFailure()
-        }
-    }
-
-    private lateinit var googleMap: GoogleMap
-
-    private var currentPlaces: List<Place>? = emptyList()
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_places,container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initViewModel()
-        initView()
-    }
-
-    private fun initViewModel() {
-        viewModel.places.observe(this,placesResponseObserver)
-    }
-
-    private fun initView() {
-        val mapFragment = childFragmentManager.findFragmentById(R.id.fragmentMapPlaces) as SupportMapFragment
-        mapFragment.getMapAsync(this)
-
-        placesFabRandom.setOnClickListener { fabView ->
-            randomPlace(); Snackbar.make(fabView, R.string.places_random_message, Snackbar.LENGTH_LONG).show()
         }
     }
 
