@@ -20,6 +20,7 @@ abstract class BaseActivity<VM: BaseViewModel,DB: ViewDataBinding> : AppCompatAc
 
     abstract fun getLayoutId(): Int
     abstract fun getViewModelClass(): Class<VM>
+    abstract fun getVariablesToBind(): Map<Int,Any>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +36,10 @@ abstract class BaseActivity<VM: BaseViewModel,DB: ViewDataBinding> : AppCompatAc
     open fun initView() {
         dataBinding = DataBindingUtil.setContentView(this, getLayoutId())
         dataBinding.setLifecycleOwner(this)
+        for ((variableId,value) in getVariablesToBind()) {
+            dataBinding.setVariable(variableId,value)
+        }
+        dataBinding.executePendingBindings()
     }
 
     fun setToolbarTitle(textInt: Int) = toolbar?.setTitle(textInt)

@@ -3,7 +3,7 @@ package com.mvvm.sample.data.places
 import android.arch.lifecycle.LiveData
 import android.content.Context
 import com.mvvm.sample.data.room.Place
-import com.mvvm.sample.livedata.DataResource
+import com.mvvm.sample.livedata.Event
 import com.mvvm.sample.livedata.NetworkRequest
 
 class PlacesRepository private constructor(
@@ -22,19 +22,19 @@ class PlacesRepository private constructor(
         }
     }
 
-    override fun getPlaces(context: Context): LiveData<DataResource<List<Place>>> {
+    override fun getPlaces(context: Context): LiveData<Event<List<Place>>> {
         return if (hasCache) {
             localDataSource.getPlaces(context)
         } else {
-            object : NetworkRequest<DataResource<List<Place>>>() {
-                override fun processBeforeDispatch(response: DataResource<List<Place>>) {
-                    response.data?.let {
+            object : NetworkRequest<Event<List<Place>>>() {
+                override fun processBeforeDispatch(response: Event<List<Place>>) {
+                    response.peekData()?.let {
                         savePlaces(context, it)
                         hasCache = true
                     }
                 }
 
-                override fun networkRequestToObserve(): LiveData<DataResource<List<Place>>> = remoteDataSource.getPlaces(context)
+                override fun networkRequestToObserve(): LiveData<Event<List<Place>>> = remoteDataSource.getPlaces(context)
 
             }.performRequest()
         }

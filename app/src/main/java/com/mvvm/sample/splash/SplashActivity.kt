@@ -15,8 +15,8 @@ private const val SPLASH_DELAY = 2000L
 class SplashActivity : BaseActivity<SplashViewModel,ActivitySplashBinding>() {
 
     override fun getLayoutId(): Int = R.layout.activity_splash
-
     override fun getViewModelClass(): Class<SplashViewModel> = SplashViewModel::class.java
+    override fun getVariablesToBind(): Map<Int, Any> = emptyMap()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

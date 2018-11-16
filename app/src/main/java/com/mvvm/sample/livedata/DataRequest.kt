@@ -7,15 +7,15 @@ abstract class DataRequest<Data> {
 
     abstract fun dataRequestToObserve() : LiveData<Data>
 
-    fun performRequest(): LiveData<DataResource<Data>> {
-        val result = MediatorLiveData<DataResource<Data>>()
+    fun performRequest(): LiveData<Event<Data>> {
+        val result = MediatorLiveData<Event<Data>>()
         val liveData = dataRequestToObserve()
         result.addSource(liveData) {
             result.removeSource(liveData)
             if (it != null) {
-                result.value = DataResource.success(it)
+                result.value = Event.success(it)
             }else {
-                result.value = DataResource.failure()
+                result.value = Event.failure()
             }
 
         }

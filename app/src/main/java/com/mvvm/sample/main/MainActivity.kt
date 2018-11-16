@@ -11,7 +11,7 @@ import com.mvvm.sample.base.BaseActivity
 import com.mvvm.sample.R
 import com.mvvm.sample.data.room.User
 import com.mvvm.sample.databinding.ActivityMainBinding
-import com.mvvm.sample.livedata.DataResource
+import com.mvvm.sample.livedata.Event
 import com.mvvm.sample.livedata.EventObserver
 import com.mvvm.sample.photos.PhotosFragment
 import com.mvvm.sample.places.PlacesFragment
@@ -20,8 +20,8 @@ import kotlinx.android.synthetic.main.toolbar.*
 class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), NavigationView.OnNavigationItemSelectedListener {
 
     override fun getLayoutId(): Int = R.layout.activity_main
-
     override fun getViewModelClass(): Class<MainViewModel> = MainViewModel::class.java
+    override fun getVariablesToBind(): Map<Int, Any> = emptyMap()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,14 +51,14 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>(), Navigat
     }
 
     private val onLogoutSuccessObserver = EventObserver<Unit> { finishAffinity() }
-    private val userEventObserver = Observer<DataResource<User>> {
+    private val userEventObserver = Observer<Event<User>> {
         if (it != null) {
             onUserSuccess(it)
         }
     }
 
-    private fun onUserSuccess(response: DataResource<User>) {
-        dataBinding.user = response.data
+    private fun onUserSuccess(response: Event<User>) {
+        dataBinding.user = response.peekData()
     }
 
     override fun onBackPressed() {

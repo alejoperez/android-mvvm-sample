@@ -11,7 +11,6 @@ import com.mvvm.sample.R
 import com.mvvm.sample.base.BaseViewModel
 import com.mvvm.sample.data.user.UserRepository
 import com.mvvm.sample.databinding.BindingAdapters
-import com.mvvm.sample.livedata.DataResource
 import com.mvvm.sample.livedata.Event
 import com.mvvm.sample.utils.checkField
 import com.mvvm.sample.utils.getValueOrDefault
@@ -29,7 +28,7 @@ class LoginViewModel(application: Application): BaseViewModel(application) {
     val isLoading = ObservableBoolean(false)
 
     private val loginEvent = MutableLiveData<Event<Unit>>()
-    val loginResponse: LiveData<DataResource<LoginResponse>> = Transformations.switchMap(loginEvent) {
+    val loginResponse: LiveData<Event<LoginResponse>> = Transformations.switchMap(loginEvent) {
         UserRepository.getInstance().login(getApplication(), LoginRequest(email.getValueOrDefault(), password.getValueOrDefault()))
     }
 
@@ -42,7 +41,7 @@ class LoginViewModel(application: Application): BaseViewModel(application) {
     fun login() {
         if (isValidForm()) {
             showProgress()
-            loginEvent.value = Event(Unit)
+            loginEvent.value = Event.loading()
         } else {
             emailError.checkField(R.string.error_invalid_email,isValidEmail())
             passwordError.checkField(R.string.error_empty_password,isValidPassword())

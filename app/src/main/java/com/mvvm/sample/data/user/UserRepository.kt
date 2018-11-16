@@ -3,7 +3,7 @@ package com.mvvm.sample.data.user
 import android.arch.lifecycle.LiveData
 import android.content.Context
 import com.mvvm.sample.data.room.User
-import com.mvvm.sample.livedata.DataResource
+import com.mvvm.sample.livedata.Event
 import com.mvvm.sample.livedata.NetworkRequest
 import com.mvvm.sample.data.preference.PreferenceManager
 import com.mvvm.sample.webservice.LoginRequest
@@ -28,29 +28,29 @@ class UserRepository private constructor(
 
     override fun getUser(context: Context) = localDataSource.getUser(context)
 
-    override fun login(context: Context, request: LoginRequest): LiveData<DataResource<LoginResponse>> = object  : NetworkRequest<DataResource<LoginResponse>>() {
+    override fun login(context: Context, request: LoginRequest): LiveData<Event<LoginResponse>> = object  : NetworkRequest<Event<LoginResponse>>() {
 
-        override fun processBeforeDispatch(response: DataResource<LoginResponse>) {
-            response.data?.let {
+        override fun processBeforeDispatch(response: Event<LoginResponse>) {
+            response.peekData()?.let {
                 PreferenceManager<String>(context).putPreference(PreferenceManager.ACCESS_TOKEN,it.accessToken)
                 localDataSource.saveUser(context, it.toUser())
             }
         }
 
-        override fun networkRequestToObserve(): LiveData<DataResource<LoginResponse>> = remoteDataSource.login(context, request)
+        override fun networkRequestToObserve(): LiveData<Event<LoginResponse>> = remoteDataSource.login(context, request)
 
     }.performRequest()
 
-    override fun register(context: Context, request: RegisterRequest): LiveData<DataResource<RegisterResponse>> = object : NetworkRequest<DataResource<RegisterResponse>>(){
+    override fun register(context: Context, request: RegisterRequest): LiveData<Event<RegisterResponse>> = object : NetworkRequest<Event<RegisterResponse>>(){
 
-        override fun processBeforeDispatch(response: DataResource<RegisterResponse>) {
-            response.data?.let {
+        override fun processBeforeDispatch(response: Event<RegisterResponse>) {
+            response.peekData()?.let {
                 PreferenceManager<String>(context).putPreference(PreferenceManager.ACCESS_TOKEN, it.accessToken)
                 localDataSource.saveUser(context, it.toUser())
             }
         }
 
-            override fun networkRequestToObserve(): LiveData<DataResource<RegisterResponse>> = remoteDataSource.register(context, request)
+            override fun networkRequestToObserve(): LiveData<Event<RegisterResponse>> = remoteDataSource.register(context, request)
 
         }.performRequest()
 

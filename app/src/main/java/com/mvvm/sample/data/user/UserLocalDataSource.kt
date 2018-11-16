@@ -5,7 +5,7 @@ import android.content.Context
 import com.mvvm.sample.data.room.SampleDataBase
 import com.mvvm.sample.data.room.User
 import com.mvvm.sample.livedata.DataRequest
-import com.mvvm.sample.livedata.DataResource
+import com.mvvm.sample.livedata.Event
 import com.mvvm.sample.data.preference.PreferenceManager
 import com.mvvm.sample.webservice.LoginRequest
 import com.mvvm.sample.webservice.LoginResponse
@@ -17,7 +17,7 @@ class UserLocalDataSource : IUserDataSource {
 
     override fun isLoggedIn(context: Context): Boolean = PreferenceManager<String>(context).findPreference(PreferenceManager.ACCESS_TOKEN,"").isNotEmpty()
 
-    override fun getUser(context: Context): LiveData<DataResource<User>> = object : DataRequest<User>() {
+    override fun getUser(context: Context): LiveData<Event<User>> = object : DataRequest<User>() {
         override fun dataRequestToObserve(): LiveData<User> = SampleDataBase.getInstance(context).userDao().getUser()
     }.performRequest()
 
@@ -29,8 +29,8 @@ class UserLocalDataSource : IUserDataSource {
 
     override fun logout(context: Context) = PreferenceManager<String>(context).putPreference(PreferenceManager.ACCESS_TOKEN,"")
 
-    override fun login(context: Context, request: LoginRequest): LiveData<DataResource<LoginResponse>> = throw UnsupportedOperationException()
+    override fun login(context: Context, request: LoginRequest): LiveData<Event<LoginResponse>> = throw UnsupportedOperationException()
 
-    override fun register(context: Context, request: RegisterRequest): LiveData<DataResource<RegisterResponse>> = throw UnsupportedOperationException()
+    override fun register(context: Context, request: RegisterRequest): LiveData<Event<RegisterResponse>> = throw UnsupportedOperationException()
 
 }

@@ -21,8 +21,8 @@ abstract class BaseFragment<VM: BaseViewModel,DB: ViewDataBinding>: Fragment(), 
     protected lateinit var viewModel: VM
 
     abstract fun getLayoutId() : Int
-
     abstract fun getViewModelClass(): Class<VM>
+    abstract fun getVariablesToBind(): Map<Int,Any>
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         initViewModel()
@@ -37,6 +37,10 @@ abstract class BaseFragment<VM: BaseViewModel,DB: ViewDataBinding>: Fragment(), 
     open fun initView(inflater: LayoutInflater, container: ViewGroup?) {
         dataBinding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)
         dataBinding.setLifecycleOwner(this)
+        for ((variableId,value) in getVariablesToBind()) {
+            dataBinding.setVariable(variableId,value)
+        }
+        dataBinding.executePendingBindings()
     }
 
     override fun onAttach(context: Context) {

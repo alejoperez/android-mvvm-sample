@@ -3,7 +3,7 @@ package com.mvvm.sample.data.photos
 import android.arch.lifecycle.LiveData
 import android.content.Context
 import com.mvvm.sample.data.room.Photo
-import com.mvvm.sample.livedata.DataResource
+import com.mvvm.sample.livedata.Event
 import com.mvvm.sample.livedata.NetworkRequest
 
 class PhotosRepository private constructor(
@@ -22,20 +22,20 @@ class PhotosRepository private constructor(
         }
     }
 
-    override fun getPhotos(context: Context): LiveData<DataResource<List<Photo>>> {
+    override fun getPhotos(context: Context): LiveData<Event<List<Photo>>> {
         return if (hasCache) {
             localDataSource.getPhotos(context)
         } else {
-            object : NetworkRequest<DataResource<List<Photo>>>() {
+            object : NetworkRequest<Event<List<Photo>>>() {
 
-                override fun processBeforeDispatch(response: DataResource<List<Photo>>) {
-                    response.data?.let {
+                override fun processBeforeDispatch(response: Event<List<Photo>>) {
+                    response.peekData()?.let {
                         savePhotos(context, it)
                         hasCache = true
                     }
                 }
 
-                override fun networkRequestToObserve(): LiveData<DataResource<List<Photo>>> = remoteDataSource.getPhotos(context)
+                override fun networkRequestToObserve(): LiveData<Event<List<Photo>>> = remoteDataSource.getPhotos(context)
 
             }.performRequest()
         }

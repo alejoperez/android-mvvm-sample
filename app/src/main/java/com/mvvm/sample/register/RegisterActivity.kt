@@ -1,10 +1,11 @@
 package com.mvvm.sample.register
 
 import android.arch.lifecycle.Observer
+import com.mvvm.sample.BR
 import com.mvvm.sample.R
 import com.mvvm.sample.base.BaseActivity
 import com.mvvm.sample.databinding.ActivityRegisterBinding
-import com.mvvm.sample.livedata.DataResource
+import com.mvvm.sample.livedata.Event
 import com.mvvm.sample.livedata.Status
 import com.mvvm.sample.login.LoginActivity
 import com.mvvm.sample.main.MainActivity
@@ -18,6 +19,11 @@ class RegisterActivity : BaseActivity<RegisterViewModel,ActivityRegisterBinding>
 
     override fun getViewModelClass(): Class<RegisterViewModel> = RegisterViewModel::class.java
 
+    override fun getVariablesToBind(): Map<Int, Any> = mapOf(
+            BR.viewModel to viewModel,
+            BR.etUtils to EditTextUtils
+    )
+
     override fun initViewModel() {
         super.initViewModel()
         viewModel.registerResponse.observe(this, onRegisterResponseObserver)
@@ -25,13 +31,10 @@ class RegisterActivity : BaseActivity<RegisterViewModel,ActivityRegisterBinding>
 
     override fun initView() {
         super.initView()
-        dataBinding.viewModel = viewModel
-        dataBinding.etUtils = EditTextUtils
-        dataBinding.btRegister.setOnClickListener { viewModel.register() }
         dataBinding.tvGoToLogin.setOnClickListener { startActivity<LoginActivity>() }
     }
 
-    private val onRegisterResponseObserver = Observer<DataResource<RegisterResponse>> {
+    private val onRegisterResponseObserver = Observer<Event<RegisterResponse>> {
         viewModel.hideProgress()
         if(it != null) {
             onRegisterResponse(it)
@@ -40,11 +43,12 @@ class RegisterActivity : BaseActivity<RegisterViewModel,ActivityRegisterBinding>
         }
     }
 
-    private fun onRegisterResponse(response: DataResource<RegisterResponse>) {
+    private fun onRegisterResponse(response: Event<RegisterResponse>) {
         when(response.status) {
             Status.SUCCESS -> onRegisterSuccess()
             Status.FAILURE -> onRegisterFailure()
             Status.NETWORK_ERROR -> onNetworkError()
+            else -> Unit
         }
     }
 

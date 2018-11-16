@@ -1,10 +1,11 @@
 package com.mvvm.sample.login
 
 import android.arch.lifecycle.Observer
+import com.android.databinding.library.baseAdapters.BR
 import com.mvvm.sample.R
 import com.mvvm.sample.base.BaseActivity
 import com.mvvm.sample.databinding.ActivityLoginBinding
-import com.mvvm.sample.livedata.DataResource
+import com.mvvm.sample.livedata.Event
 import com.mvvm.sample.livedata.Status
 import com.mvvm.sample.main.MainActivity
 import com.mvvm.sample.utils.EditTextUtils
@@ -14,22 +15,18 @@ import org.jetbrains.anko.startActivity
 class LoginActivity : BaseActivity<LoginViewModel,ActivityLoginBinding>() {
 
     override fun getLayoutId(): Int = R.layout.activity_login
-
     override fun getViewModelClass(): Class<LoginViewModel> = LoginViewModel::class.java
-
-    override fun initView() {
-        super.initView()
-        dataBinding.viewModel = viewModel
-        dataBinding.etUtils = EditTextUtils
-        dataBinding.btLogin.setOnClickListener { viewModel.login() }
-    }
+    override fun getVariablesToBind(): Map<Int, Any> = mapOf(
+            BR.viewModel to viewModel,
+            BR.etUtils to EditTextUtils
+    )
 
     override fun initViewModel() {
         super.initViewModel()
         viewModel.loginResponse.observe(this, onLoginResponseObserver)
     }
 
-    private val onLoginResponseObserver = Observer<DataResource<LoginResponse>> {
+    private val onLoginResponseObserver = Observer<Event<LoginResponse>> {
         viewModel.hideProgress()
         if (it != null) {
             onLoginResponse(it)
@@ -38,11 +35,12 @@ class LoginActivity : BaseActivity<LoginViewModel,ActivityLoginBinding>() {
         }
     }
 
-    private fun onLoginResponse(response: DataResource<LoginResponse>) {
+    private fun onLoginResponse(response: Event<LoginResponse>) {
         when (response.status) {
             Status.SUCCESS -> onLoginSuccess()
             Status.FAILURE -> onLoginFailure()
             Status.NETWORK_ERROR -> onNetworkError()
+            else -> Unit
         }
     }
 

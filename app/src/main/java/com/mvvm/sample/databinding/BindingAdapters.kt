@@ -9,7 +9,7 @@ object BindingAdapters {
     const val EMPTY = 0
 
     @JvmStatic
-    @BindingAdapter("app:errorText")
+    @BindingAdapter("errorText")
     fun EditText.setErrorText(errorResource: Int) {
         error = when (errorResource) {
             EMPTY -> null
@@ -18,7 +18,7 @@ object BindingAdapters {
     }
 
     @JvmStatic
-    @BindingAdapter("app:filters")
+    @BindingAdapter("filters")
     fun EditText.setInputFilters(filterArray: Array<InputFilter>) {
         filters = filterArray
     }

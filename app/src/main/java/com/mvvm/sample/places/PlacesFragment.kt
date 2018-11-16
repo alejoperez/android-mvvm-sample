@@ -11,11 +11,12 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.mvvm.sample.BR
 import com.mvvm.sample.R
 import com.mvvm.sample.base.BaseFragment
 import com.mvvm.sample.data.room.Place
 import com.mvvm.sample.databinding.FragmentPlacesBinding
-import com.mvvm.sample.livedata.DataResource
+import com.mvvm.sample.livedata.Event
 import com.mvvm.sample.livedata.Status
 
 class PlacesFragment: BaseFragment<PlacesViewModel,FragmentPlacesBinding>(), OnMapReadyCallback {
@@ -26,13 +27,16 @@ class PlacesFragment: BaseFragment<PlacesViewModel,FragmentPlacesBinding>(), OnM
         fun newInstance() = PlacesFragment()
     }
 
+    override fun getLayoutId(): Int = R.layout.fragment_places
+    override fun getViewModelClass(): Class<PlacesViewModel> = PlacesViewModel::class.java
+    override fun getVariablesToBind(): Map<Int, Any> = mapOf(
+            BR.viewModel to viewModel
+    )
+
     private lateinit var googleMap: GoogleMap
 
     private var currentPlaces: List<Place>? = emptyList()
 
-    override fun getLayoutId(): Int = R.layout.fragment_places
-
-    override fun getViewModelClass(): Class<PlacesViewModel> = PlacesViewModel::class.java
 
     override fun initViewModel() {
         super.initViewModel()
@@ -49,7 +53,7 @@ class PlacesFragment: BaseFragment<PlacesViewModel,FragmentPlacesBinding>(), OnM
         }
     }
 
-    private val placesResponseObserver = Observer<DataResource<List<Place>>>{
+    private val placesResponseObserver = Observer<Event<List<Place>>>{
         if (it != null) {
             onPlacesResponse(it)
         } else {
@@ -62,11 +66,12 @@ class PlacesFragment: BaseFragment<PlacesViewModel,FragmentPlacesBinding>(), OnM
         viewModel.getPlaces()
     }
 
-    private fun onPlacesResponse(response: DataResource<List<Place>>) {
+    private fun onPlacesResponse(response: Event<List<Place>>) {
         when(response.status) {
-            Status.SUCCESS -> onPlacesSuccess(response.data)
+            Status.SUCCESS -> onPlacesSuccess(response.peekData())
             Status.FAILURE -> onPlacesFailure()
             Status.NETWORK_ERROR -> onNetworkError()
+            else -> Unit
         }
     }
 

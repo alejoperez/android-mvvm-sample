@@ -26,7 +26,7 @@ class LiveDataCallAdapterFactory private constructor() : CallAdapter.Factory() {
         }
         val observableType = CallAdapter.Factory.getParameterUpperBound(0, returnType as ParameterizedType)
         val rawObservableType = CallAdapter.Factory.getRawType(observableType)
-        if (rawObservableType != DataResource::class.java) {
+        if (rawObservableType != Event::class.java) {
             throw IllegalArgumentException("type must be a DataResource")
         }
         if (observableType !is ParameterizedType) {
@@ -37,12 +37,12 @@ class LiveDataCallAdapterFactory private constructor() : CallAdapter.Factory() {
     }
 
     class LiveDataCallAdapter<R>(private val responseType: Type) :
-            CallAdapter<R, LiveData<DataResource<R>>> {
+            CallAdapter<R, LiveData<Event<R>>> {
 
         override fun responseType() = responseType
 
-        override fun adapt(call: Call<R>): LiveData<DataResource<R>> {
-            return object : LiveData<DataResource<R>>() {
+        override fun adapt(call: Call<R>): LiveData<Event<R>> {
+            return object : LiveData<Event<R>>() {
                 private var started = AtomicBoolean(false)
                 override fun onActive() {
                     super.onActive()
@@ -50,14 +50,14 @@ class LiveDataCallAdapterFactory private constructor() : CallAdapter.Factory() {
                         call.enqueue(object : Callback<R> {
                             override fun onResponse(call: Call<R>, response: Response<R>) {
                                 if (response.isSuccessful) {
-                                    postValue(DataResource.success(response.body()))
+                                    postValue(Event.success(response.body()))
                                 } else {
-                                    postValue(DataResource.failure())
+                                    postValue(Event.failure())
                                 }
                             }
 
                             override fun onFailure(call: Call<R>, throwable: Throwable) {
-                                postValue(DataResource.networkError())
+                                postValue(Event.networkError())
                             }
                         })
                     }

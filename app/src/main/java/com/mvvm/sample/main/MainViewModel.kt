@@ -7,25 +7,24 @@ import android.arch.lifecycle.Transformations
 import com.mvvm.sample.base.BaseViewModel
 import com.mvvm.sample.data.room.User
 import com.mvvm.sample.data.user.UserRepository
-import com.mvvm.sample.livedata.DataResource
 import com.mvvm.sample.livedata.Event
 
 class MainViewModel(application: Application) : BaseViewModel(application) {
 
     private val getUserEvent = MutableLiveData<Event<Unit>>()
-    val user: LiveData<DataResource<User>> = Transformations.switchMap(getUserEvent) {
+
+    val user: LiveData<Event<User>> = Transformations.switchMap(getUserEvent) {
         UserRepository.getInstance().getUser(getApplication())
     }
 
     val onLogoutSuccess = MutableLiveData<Event<Unit>>()
 
     fun getUser() {
-        getUserEvent.value = Event(Unit)
+        getUserEvent.value = Event.loading()
     }
 
     fun logout() {
-        UserRepository.getInstance().logout(getApplication())
-        onLogoutSuccess.value = Event(Unit)
+        onLogoutSuccess.value = Event.success(UserRepository.getInstance().logout(getApplication()))
     }
 
 }

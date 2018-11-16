@@ -12,7 +12,6 @@ import com.mvvm.sample.data.user.UserRepository
 import com.mvvm.sample.databinding.BindingAdapters
 import com.mvvm.sample.utils.checkField
 import com.mvvm.sample.utils.getValueOrDefault
-import com.mvvm.sample.livedata.DataResource
 import com.mvvm.sample.livedata.Event
 import com.mvvm.sample.webservice.RegisterRequest
 import com.mvvm.sample.webservice.RegisterResponse
@@ -31,14 +30,14 @@ class RegisterViewModel(application: Application): BaseViewModel(application) {
 
     private val registerEvent = MutableLiveData<Event<Unit>>()
 
-    val registerResponse: LiveData<DataResource<RegisterResponse>> = Transformations.switchMap(registerEvent) {
+    val registerResponse: LiveData<Event<RegisterResponse>> = Transformations.switchMap(registerEvent) {
         UserRepository.getInstance().register(getApplication(), RegisterRequest(name.getValueOrDefault(), email.getValueOrDefault(), password.getValueOrDefault()))
     }
 
     fun register() {
         if (isValidForm()) {
             showProgress()
-            registerEvent.value = Event(Unit)
+            registerEvent.value = Event.loading()
         } else {
             errorName.checkField(R.string.error_name_empty,isValidName())
             errorEmail.checkField(R.string.error_invalid_email,isValidEmail())

@@ -11,7 +11,7 @@ class SplashViewModel(application: Application): BaseViewModel(application) {
     val isUserLoggedEvent = MutableLiveData<Event<Boolean>>()
 
     fun isUserLoggedIn() {
-        isUserLoggedEvent.value = Event(UserRepository.getInstance().isLoggedIn(getApplication()))
+        isUserLoggedEvent.value = Event.success(UserRepository.getInstance().isLoggedIn(getApplication()))
     }
 
 }
