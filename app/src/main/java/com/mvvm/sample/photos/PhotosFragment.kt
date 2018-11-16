@@ -7,13 +7,14 @@ import android.view.ViewGroup
 import com.mvvm.sample.BR
 import com.mvvm.sample.R
 import com.mvvm.sample.base.BaseFragment
+import com.mvvm.sample.base.BaseRecyclerViewAdapter
 import com.mvvm.sample.data.room.Photo
 import com.mvvm.sample.databinding.FragmentPhotosBinding
 import com.mvvm.sample.livedata.Event
 import com.mvvm.sample.livedata.Status
 import com.mvvm.sample.view.SimpleDividerItemDecorator
 
-class PhotosFragment : BaseFragment<PhotosViewModel,FragmentPhotosBinding>(), PhotoItemView.OnPhotoClickListener {
+class PhotosFragment : BaseFragment<PhotosViewModel,FragmentPhotosBinding>(), BaseRecyclerViewAdapter.OnItemClickListener {
 
     companion object {
         const val TAG = "PhotosFragment"
@@ -69,8 +70,8 @@ class PhotosFragment : BaseFragment<PhotosViewModel,FragmentPhotosBinding>(), Ph
         showAlert(R.string.error_loading_photos)
     }
 
-    override fun onPhotoClicked(photo: Photo?) {
-        PhotoDetailDialogFragment.newInstance(photo?.url).show(fragmentManager, PhotoDetailDialogFragment.TAG)
+    override fun onItemClicked(item: Any?) {
+        PhotoDetailDialogFragment.newInstance((item as Photo).url).show(fragmentManager, PhotoDetailDialogFragment.TAG)
     }
 
 }

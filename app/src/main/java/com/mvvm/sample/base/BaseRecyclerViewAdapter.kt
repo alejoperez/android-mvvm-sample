@@ -1,0 +1,37 @@
+package com.mvvm.sample.base
+
+import android.databinding.DataBindingUtil
+import android.databinding.ViewDataBinding
+import android.support.v7.widget.RecyclerView
+import android.view.ViewGroup
+import com.mvvm.sample.BR
+import android.view.LayoutInflater
+
+abstract class BaseRecyclerViewAdapter(private val list: List<Any>?, private val listener: BaseRecyclerViewAdapter.OnItemClickListener? = null): RecyclerView.Adapter<BaseRecyclerViewAdapter.BaseViewHolder>() {
+
+    abstract fun getItemLayoutId(): Int
+
+    override fun getItemViewType(position: Int): Int = getItemLayoutId()
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+        val dataBinding = DataBindingUtil.inflate<ViewDataBinding>(LayoutInflater.from(parent.context), viewType, parent, false)
+        return BaseViewHolder(dataBinding,listener)
+    }
+
+    override fun getItemCount(): Int = list?.size ?: 0
+
+    override fun onBindViewHolder(holder: BaseViewHolder, position: Int) = holder.bind(list?.get(position))
+
+    class BaseViewHolder(private val dataBinding: ViewDataBinding, private val listener: BaseRecyclerViewAdapter.OnItemClickListener? = null) : RecyclerView.ViewHolder(dataBinding.root) {
+        fun bind(item: Any?) {
+            dataBinding.root.setOnClickListener { listener?.onItemClicked(item) }
+            dataBinding.setVariable(BR.item,item)
+            dataBinding.executePendingBindings()
+        }
+    }
+
+    interface OnItemClickListener {
+        fun onItemClicked(item: Any?)
+    }
+
+}

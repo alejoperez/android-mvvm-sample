@@ -3,6 +3,8 @@ package com.mvvm.sample.databinding
 import android.databinding.BindingAdapter
 import android.text.InputFilter
 import android.widget.EditText
+import android.widget.ImageView
+import com.bumptech.glide.Glide
 
 object BindingAdapters {
 
@@ -22,4 +24,12 @@ object BindingAdapters {
     fun EditText.setInputFilters(filterArray: Array<InputFilter>) {
         filters = filterArray
     }
+
+    @JvmStatic
+    @BindingAdapter("url")
+    fun ImageView.setImageUrl(url: String) {
+        Glide.with(this).load(url).into(this)
+    }
+
+
 }
