@@ -2,10 +2,13 @@
 <layout>
 
     <data>
+
         <import type="android.view.View" />
+
         <variable
             name="etUtils"
             type="com.mvvm.sample.utils.EditTextUtils" />
+
         <variable
             name="viewModel"
             type="com.mvvm.sample.register.RegisterViewModel" />
@@ -21,13 +24,13 @@
         <EditText
             android:id="@+id/etName"
             style="@style/EditTextTheme"
+            errorText="@{viewModel.errorName}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="@string/register_name_hint"
             android:inputType="textPersonName"
             android:text="@={viewModel.name}"
-            errorText="@{viewModel.errorName}"
             app:layout_constraintBottom_toTopOf="@+id/etEmail"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -35,14 +38,14 @@
         <EditText
             android:id="@+id/etEmail"
             style="@style/EditTextTheme"
+            errorText="@{viewModel.errorEmail}"
+            filters="@{etUtils.whiteSpaceFilters}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="@string/register_email_hint"
             android:inputType="textEmailAddress"
             android:text="@={viewModel.email}"
-            errorText="@{viewModel.errorEmail}"
-            filters="@{etUtils.whiteSpaceFilters}"
             app:layout_constraintBottom_toTopOf="@+id/etPassword"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -51,14 +54,14 @@
         <EditText
             android:id="@+id/etPassword"
             style="@style/EditTextTheme"
+            errorText="@{viewModel.errorPassword}"
+            filters="@{etUtils.whiteSpaceFilters}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="@string/register_password_hint"
             android:inputType="textPassword"
             android:text="@={viewModel.password}"
-            errorText="@{viewModel.errorPassword}"
-            filters="@{etUtils.whiteSpaceFilters}"
             app:layout_constraintBottom_toTopOf="@+id/btRegister"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -80,10 +83,10 @@
             style="@style/ButtonAccentTheme"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:visibility="@{safeUnbox(viewModel.isLoading) ? View.INVISIBLE : View.VISIBLE }"
+            android:onClick="@{() -> viewModel.register()}"
             android:text="@string/register_button"
             android:theme="@style/ButtonAccentTheme"
-            android:onClick="@{() -> viewModel.register()}"
+            android:visibility="@{safeUnbox(viewModel.isLoading) ? View.INVISIBLE : View.VISIBLE }"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

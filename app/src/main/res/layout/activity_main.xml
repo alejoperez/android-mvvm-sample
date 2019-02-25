@@ -2,6 +2,7 @@
 <layout>
 
     <data>
+
         <variable
             name="user"
             type="com.mvvm.sample.data.room.User" />
@@ -29,11 +30,11 @@
             android:layout_gravity="start"
             android:fitsSystemWindows="true"
             app:headerLayout="@layout/nav_header_main"
-            app:menu="@menu/activity_main_drawer" >
+            app:menu="@menu/activity_main_drawer">
 
             <include
                 layout="@layout/nav_header_main"
-                bind:user="@{user}"/>
+                bind:user="@{user}" />
 
 
         </android.support.design.widget.NavigationView>

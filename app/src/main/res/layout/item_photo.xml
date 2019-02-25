@@ -18,7 +18,7 @@
 
         <ImageView
             android:id="@+id/ivThumbnail"
-            url="@{item.url}"
+            url="@{item.thumbnailUrl}"
             android:layout_width="@dimen/image_size_thumbnail"
             android:layout_height="@dimen/image_size_thumbnail"
             android:contentDescription="@string/app_name"

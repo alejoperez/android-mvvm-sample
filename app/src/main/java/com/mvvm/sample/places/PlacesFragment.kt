@@ -102,10 +102,14 @@ class PlacesFragment: BaseFragment<PlacesViewModel,FragmentPlacesBinding>(), OnM
 
     private fun randomPlace() {
         currentPlaces?.let {
-            val randomPosition = (0 until it.size).shuffled().first()
-            val place = it[randomPosition]
-            val cameraPosition = CameraPosition.Builder().target(LatLng(place.lat, place.lon)).zoom(ZOOM).build()
-            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+
+            if (it.isNotEmpty()) {
+                val randomPosition = (0 until it.size).shuffled().first()
+                val place = it[randomPosition]
+                val cameraPosition = CameraPosition.Builder().target(LatLng(place.lat, place.lon)).zoom(ZOOM).build()
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+            }
+
         }
     }
 

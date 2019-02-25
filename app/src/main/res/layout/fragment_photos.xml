@@ -2,7 +2,9 @@
 <layout>
 
     <data>
+
         <import type="android.view.View" />
+
         <variable
             name="viewModel"
             type="com.mvvm.sample.photos.PhotosViewModel" />
@@ -19,8 +21,8 @@
             android:id="@+id/rvPhotos"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="@{safeUnbox(viewModel.isLoading) ? View.INVISIBLE : View.VISIBLE}"
-            android:scrollbars="vertical" />
+            android:scrollbars="vertical"
+            android:visibility="@{safeUnbox(viewModel.isLoading) ? View.INVISIBLE : View.VISIBLE}" />
 
         <ProgressBar
             android:id="@+id/progress"

@@ -71,7 +71,7 @@ class PhotosFragment : BaseFragment<PhotosViewModel,FragmentPhotosBinding>(), Ba
     }
 
     override fun onItemClicked(item: Any?) {
-        PhotoDetailDialogFragment.newInstance((item as Photo).url).show(fragmentManager, PhotoDetailDialogFragment.TAG)
+        PhotoDetailDialogFragment.newInstance(item as Photo).show(fragmentManager, PhotoDetailDialogFragment.TAG)
     }
 
 }

@@ -2,6 +2,7 @@
 <layout>
 
     <data>
+
         <variable
             name="user"
             type="com.mvvm.sample.data.room.User" />
