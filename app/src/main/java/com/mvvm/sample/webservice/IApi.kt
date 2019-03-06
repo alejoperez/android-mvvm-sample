@@ -1,6 +1,6 @@
 package com.mvvm.sample.webservice
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import com.mvvm.sample.data.room.Photo
 import com.mvvm.sample.data.room.Place
 import com.mvvm.sample.livedata.Event

@@ -1,8 +1,8 @@
 package com.mvvm.sample.base
 
-import android.databinding.DataBindingUtil
-import android.databinding.ViewDataBinding
-import android.support.v7.widget.RecyclerView
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
+import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import com.mvvm.sample.BR
 import android.view.LayoutInflater

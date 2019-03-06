@@ -1,9 +1,9 @@
 package com.mvvm.sample.places
 
 import android.app.Application
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Transformations
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import com.mvvm.sample.base.BaseViewModel
 import com.mvvm.sample.data.room.Place
 import com.mvvm.sample.data.places.PlacesRepository

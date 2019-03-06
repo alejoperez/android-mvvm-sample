@@ -1,7 +1,7 @@
 package com.mvvm.sample.photos
 
-import android.arch.lifecycle.Observer
-import android.support.v7.widget.LinearLayoutManager
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.mvvm.sample.BR
@@ -59,7 +59,7 @@ class PhotosFragment : BaseFragment<PhotosViewModel,FragmentPhotosBinding>(), Ba
 
     private fun onPhotosSuccess(photos: List<Photo>?) {
         dataBinding.rvPhotos.apply {
-            layoutManager = LinearLayoutManager(getViewContext())
+            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(getViewContext())
             setHasFixedSize(true)
             addItemDecoration(SimpleDividerItemDecorator(getViewContext()))
             adapter = PhotosAdapter(photos, this@PhotosFragment)

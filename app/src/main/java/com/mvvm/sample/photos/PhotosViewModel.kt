@@ -1,10 +1,10 @@
 package com.mvvm.sample.photos
 
 import android.app.Application
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Transformations
-import android.databinding.ObservableBoolean
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.databinding.ObservableBoolean
 import com.mvvm.sample.base.BaseViewModel
 import com.mvvm.sample.data.room.Photo
 import com.mvvm.sample.data.photos.PhotosRepository

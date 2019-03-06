@@ -1,6 +1,6 @@
 package com.mvvm.sample.data.user
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import android.content.Context
 import com.mvvm.sample.data.room.SampleDataBase
 import com.mvvm.sample.data.room.User

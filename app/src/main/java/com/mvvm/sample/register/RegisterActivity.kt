@@ -1,6 +1,6 @@
 package com.mvvm.sample.register
 
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.Observer
 import com.mvvm.sample.BR
 import com.mvvm.sample.R
 import com.mvvm.sample.base.BaseActivity

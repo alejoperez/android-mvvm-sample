@@ -1,7 +1,7 @@
 package com.mvvm.sample.places
 
-import android.arch.lifecycle.Observer
-import android.support.design.widget.Snackbar
+import androidx.lifecycle.Observer
+import com.google.android.material.snackbar.Snackbar
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.google.android.gms.maps.CameraUpdateFactory
